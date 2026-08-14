@@ -13,22 +13,18 @@ st.set_page_config(
     initial_sidebar_state="collapsed"
 )
 
-# Function to convert local image to Base64 for sharp rendering
-def get_image_base64(image_path):
-    if os.path.exists(image_path):
-        with open(image_path, "rb") as img_file:
-            return base64.b64encode(img_file.read()).decode('utf-8')
-    return None
+# Function to get sharp avatar image (with smart fallback)
+def get_profile_image():
+    for fname in ["arun_magar.jpg", "arun_magar.png", "arun_magar.jpeg"]:
+        if os.path.exists(fname):
+            with open(fname, "rb") as f:
+                encoded = base64.b64encode(f.read()).decode('utf-8')
+                ext = fname.split('.')[-1]
+                return f"data:image/{ext};base64,{encoded}"
+    # Professional fallback avatar if local file is missing
+    return "https://ui-avatars.com/api/?name=Arun+Magar&background=2563EB&color=fff&size=128"
 
-# Convert Arun Magar photo if available
-photo_base64 = get_image_base64("arun_magar.jpg")
-if photo_base64:
-    img_src = f"data:image/jpeg;base64,{photo_base64}"
-else:
-    # Fallback high-res placeholder if photo file is missing
-    img_src = "https://raw.githubusercontent.com/streamlit/streamlit/main/docs/static/logo.png"
-
-# WhatsApp QR Code Link
+img_src = get_profile_image()
 wa_qr_url = "https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=https://wa.me/919637008151"
 
 # 2. Multilingual Translations Dictionary (I18N)
@@ -215,89 +211,23 @@ TEXTS = {
     }
 }
 
-# 3. Modern CSS Layout for Top Blue Executive Banner
-st.markdown(f"""
+# 3. Modern CSS Styling
+st.markdown("""
     <style>
-    .stApp {{
+    .stApp {
         background-color: #F8FAFC;
         font-family: 'Inter', system-ui, -apple-system, sans-serif;
-    }}
+    }
     
-    /* Top Executive Blue Banner */
-    .executive-header {{
+    .header-banner {
         background: linear-gradient(135deg, #0F2B5C 0%, #1E40AF 50%, #2563EB 100%);
-        color: white;
-        padding: 20px;
         border-radius: 16px;
+        padding: 20px;
         box-shadow: 0 10px 20px -5px rgba(15, 43, 92, 0.4);
         margin-bottom: 25px;
-        display: flex;
-        flex-wrap: wrap;
-        align-items: center;
-        justify-content: space-between;
-    }}
+    }
 
-    /* Left: Profile Card */
-    .profile-box {{
-        display: flex;
-        align-items: center;
-        gap: 15px;
-        background: rgba(255, 255, 255, 0.1);
-        padding: 12px 16px;
-        border-radius: 12px;
-        backdrop-filter: blur(5px);
-        border: 1px solid rgba(255, 255, 255, 0.2);
-    }}
-    .profile-img {{
-        width: 80px;
-        height: 80px;
-        border-radius: 50%;
-        object-fit: cover;
-        border: 3px solid #60A5FA;
-        box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-    }}
-    .profile-info h3 {{ margin: 0; font-size: 17px; font-weight: 700; color: #FFFFFF; }}
-    .profile-info p {{ margin: 2px 0 0 0; font-size: 13px; color: #93C5FD; }}
-    .profile-info a {{ color: #60A5FA; font-weight: bold; text-decoration: none; font-size: 13px; }}
-
-    /* Center: Branding */
-    .center-branding {{
-        text-align: center;
-        padding: 10px;
-        flex: 1;
-        min-width: 280px;
-    }}
-    .center-branding h1 {{ margin: 0; font-size: 26px; font-weight: 800; color: #FFFFFF; }}
-    .center-branding .motto {{ font-size: 15px; font-style: italic; color: #FDE047; font-weight: 600; margin: 4px 0; }}
-    .center-branding p {{ font-size: 12px; margin: 0; opacity: 0.9; color: #E0F2FE; }}
-
-    /* Right: All-India Farmers Map Card */
-    .map-box {{
-        background: rgba(255, 255, 255, 0.12);
-        padding: 12px 16px;
-        border-radius: 12px;
-        border: 1px solid rgba(255, 255, 255, 0.25);
-        text-align: center;
-        max-width: 320px;
-    }}
-    .map-box h4 {{ margin: 0; font-size: 15px; font-weight: 700; color: #FDE047; }}
-    .map-box .stat {{ font-size: 13px; color: #FFFFFF; font-weight: 600; margin: 4px 0; }}
-    .map-btn {{
-        display: inline-block;
-        background: #10B981;
-        color: white !important;
-        padding: 6px 14px;
-        border-radius: 6px;
-        font-size: 12px;
-        font-weight: bold;
-        text-decoration: none;
-        margin-top: 6px;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.2);
-    }}
-    .map-btn:hover {{ background: #059669; }}
-
-    /* Section Headers */
-    .section-title {{
+    .section-title {
         font-size: 20px;
         font-weight: 800;
         color: #0F172A;
@@ -308,71 +238,75 @@ st.markdown(f"""
         margin-top: 15px;
         margin-bottom: 15px;
         box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-    }}
+    }
 
-    .top-mandi-card {{
+    .top-mandi-card {
         background: white;
         padding: 12px;
         border-radius: 10px;
         border-left: 4px solid #10B981;
         box-shadow: 0 2px 4px rgba(0,0,0,0.04);
         margin-bottom: 8px;
-    }}
+    }
 
-    div[data-testid="stDataFrame"] {{
+    div[data-testid="stDataFrame"] {
         background: white;
         border-radius: 12px;
         padding: 8px;
         border: 1px solid #E2E8F0;
-    }}
+    }
     </style>
 """, unsafe_allow_html=True)
 
-# 4. Language Selector Bar
+# 4. Top Language Selector Bar
 lang_list = ["English", "Kannada (ಕನ್ನಡ)", "Hindi (हिंदी)", "Telugu (తెలుగు)", "Marathi (मराठी)", "Tamil (தமிழ்)"]
 lang_col1, lang_col2 = st.columns([3, 1])
 
 with lang_col2:
     selected_lang = st.selectbox("🌐 Choose Language / ಭಾಷೆ:", lang_list, index=0)
 
-# Selected Translation Dictionary
 T = TEXTS.get(selected_lang, TEXTS["English"])
 
-# 5. RENDER BLUE EXECUTIVE HEADER BANNER
-st.markdown(f"""
-    <div class='executive-header'>
-        <!-- LEFT: OWNER PROFILE & WHATSAPP QR -->
-        <div class='profile-box'>
-            <img src='{img_src}' class='profile-img' alt='Arun B. Magar' />
-            <div class='profile-info'>
-                <h3>ARUN B. MAGAR</h3>
-                <p>Founder, Silk Creators</p>
-                <p>📞 <a href='https://wa.me/919637008151' target='_blank'>+91 9637008151</a></p>
-                <div style="margin-top:5px; display:flex; align-items:center; gap:6px;">
-                    <img src="{wa_qr_url}" style="width:38px; height:38px; border-radius:4px; border:1px solid white;" title="Scan to Chat on WhatsApp" />
-                    <span style="font-size:10px; color:#E0F2FE;">Scan WhatsApp QR</span>
-                </div>
+# 5. RENDER BULLETPROOF EXECUTIVE BLUE BANNER
+st.markdown("<div class='header-banner'>", unsafe_allow_html=True)
+h_col1, h_col2, h_col3 = st.columns([1.2, 1.8, 1.2])
+
+with h_col1:
+    st.markdown(f"""
+        <div style="display:flex; align-items:center; gap:12px;">
+            <img src="{img_src}" style="width:75px; height:75px; border-radius:50%; object-fit:cover; border:3px solid #60A5FA;" alt="Arun B. Magar" />
+            <div>
+                <h4 style="margin:0; font-size:16px; color:white; font-weight:700;">ARUN B. MAGAR</h4>
+                <p style="margin:2px 0; font-size:12px; color:#93C5FD;">Founder, Silk Creators</p>
+                <p style="margin:0; font-size:12px;"><a href="https://wa.me/919637008151" target="_blank" style="color:#60A5FA; font-weight:bold; text-decoration:none;">📞 +91 9637008151</a></p>
             </div>
         </div>
-        
-        <!-- CENTER: BRANDING -->
-        <div class='center-branding'>
-            <h1>{T['app_title']}</h1>
-            <div class='motto'>"{T['app_motto']}"</div>
-            <p>{T['app_subtitle']}</p>
+        <div style="margin-top:8px; display:flex; align-items:center; gap:8px;">
+            <img src="{wa_qr_url}" style="width:36px; height:36px; border-radius:4px; border:1px solid white;" alt="WhatsApp QR" />
+            <span style="font-size:11px; color:#E0F2FE;">Scan WhatsApp QR</span>
         </div>
+    """, unsafe_allow_html=True)
 
-        <!-- RIGHT: ALL-INDIA SERICULTURE FARMERS MAP -->
-        <div class='map-box'>
-            <h4>🗺️ All-India Silk Farmers Map</h4>
-            <div class='stat'>🌱 <b>12,000+</b> Mapped Farmers</div>
-            <div class='stat'>👁️ <b>9,99,620+</b> Map Views</div>
-            <a href='https://www.google.com/maps/d/u/0/viewer?mid=1EvaJdvlAcQf3m4cjrKkwKuzSDoIK8r4&ll=24.84266843022882%2C95.18937613831109&z=3' target='_blank' class='map-btn'>
-                📍 Explore Live Farmers Map
-            </a>
+with h_col2:
+    st.markdown(f"""
+        <div style="text-align:center;">
+            <h2 style="margin:0; color:white; font-size:24px; font-weight:800;">{T['app_title']}</h2>
+            <div style="font-size:14px; color:#FDE047; font-style:italic; font-weight:600; margin:4px 0;">"{T['app_motto']}"</div>
+            <p style="margin:0; font-size:12px; color:#E0F2FE;">{T['app_subtitle']}</p>
         </div>
-    </div>
-""", unsafe_allow_html=True)
+    """, unsafe_allow_html=True)
+
+with h_col3:
+    st.markdown("""
+        <div style="background:rgba(255,255,255,0.12); padding:10px; border-radius:10px; border:1px solid rgba(255,255,255,0.25); text-align:center;">
+            <div style="font-size:14px; font-weight:700; color:#FDE047;">🗺️ All-India Silk Farmers Map</div>
+            <div style="font-size:12px; color:white; margin:2px 0;">🌱 <b>12,000+</b> Mapped Farmers</div>
+            <div style="font-size:12px; color:white; margin-bottom:4px;">👁️ <b>9,99,620+</b> Map Views</div>
+            <a href="https://www.google.com/maps/d/u/0/viewer?mid=1EvaJdvlAcQf3m4cjrKkwKuzSDoIK8r4&ll=24.84266843022882%2C95.18937613831109&z=3" target="_blank" style="background:#10B981; color:white; padding:5px 12px; border-radius:5px; font-size:11px; font-weight:bold; text-decoration:none; display:inline-block;">📍 Explore Live Map</a>
+        </div>
+    """, unsafe_allow_html=True)
+
+st.markdown("</div>", unsafe_allow_html=True)
 
 SHEET_URL = "https://docs.google.com/spreadsheets/d/1ysO7bTj3SGMa64vwVcwnojAdxU0J2JkdxvjeKZvuRSU/gviz/tq?tqx=out:csv&sheet=India%20Market%20Rate"
 
