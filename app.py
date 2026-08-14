@@ -11,7 +11,7 @@ st.set_page_config(
     initial_sidebar_state="collapsed"
 )
 
-# 2. Custom CSS for Modern UI
+# 2. Modern UI CSS Styling
 st.markdown("""
     <style>
     .stApp {
@@ -44,6 +44,15 @@ st.markdown("""
         box-shadow: 0 1px 3px rgba(0,0,0,0.05);
     }
 
+    .calc-card {
+        background: #FFFFFF;
+        padding: 18px;
+        border-radius: 12px;
+        border: 2px solid #2563EB;
+        box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+        margin-bottom: 20px;
+    }
+
     .top-mandi-card {
         background: white;
         padding: 12px;
@@ -62,7 +71,7 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-# Branding Banner
+# Branding Banner Header
 st.markdown("""
     <div class='brand-header'>
         <h1>🌾 Silk Creators - ರೇಷ್ಮೆ ಮಾರುಕಟ್ಟೆ ಬೆಲೆಗಳು</h1>
@@ -122,10 +131,9 @@ try:
     df_bv = date_df[date_df['Variety_Clean'] == 'Bi-Voltine (BV)'].copy()
     df_cb = date_df[date_df['Variety_Clean'] == 'Cross-Breed (CB)'].copy()
 
-    # 📲 UPGRADE 1: WHATSAPP SHARE & CSV DOWNLOAD BAR
+    # WhatsApp Sharing
     with ctrl3:
         st.write("") # Spacer
-        # Build WhatsApp Message Text
         bv_avg_str = f"₹{df_bv['Avg'].mean():.0f}" if not df_bv.empty else "N/A"
         cb_avg_str = f"₹{df_cb['Avg'].mean():.0f}" if not df_cb.empty else "N/A"
         
@@ -141,7 +149,41 @@ try:
             </a>
         """, unsafe_allow_html=True)
 
-    # 🏆 UPGRADE 2: TODAY'S HIGHEST PAYING MANDI HIGHLIGHTS
+    # -------------------------------------------------------------------------
+    # NEW ENHANCEMENT 1: FARMER COCOON INCOME ESTIMATOR / CALCULATOR WIDGET
+    # -------------------------------------------------------------------------
+    with st.expander("🧮 **Farmer Revenue Estimator / ಆದಾಯ ಲೆಕ್ಕಾಚಾರ (Click to Calculate Your Payout)**", expanded=False):
+        st.markdown("<div class='calc-card'>", unsafe_allow_html=True)
+        st.subheader("💰 Calculate Your Estimated Harvest Payout")
+        
+        c_calc1, c_calc2, c_calc3 = st.columns(3)
+        with c_calc1:
+            farmer_qty = st.number_input("Enter Harvest Weight (Kg):", min_value=10, max_value=5000, value=100, step=10)
+        with c_calc2:
+            calc_variety = st.selectbox("Select Variety:", ["Bi-Voltine (BV)", "Cross-Breed (CB)"])
+        with c_calc3:
+            all_mandis = sorted([str(m) for m in date_df['Market Name'].dropna().unique() if str(m).strip() != ''])
+            calc_mandi = st.selectbox("Select Target Mandi:", all_mandis if all_mandis else ["Ramanagara"])
+
+        # Calculate estimated revenue
+        calc_match = date_df[(date_df['Variety_Clean'] == calc_variety) & (date_df['Market Name'] == calc_mandi)]
+        if not calc_match.empty and 'Avg' in calc_match.columns:
+            m_avg = calc_match['Avg'].values[0]
+            m_max = calc_match['Max'].values[0]
+            
+            est_avg_payout = farmer_qty * m_avg
+            est_max_payout = farmer_qty * m_max
+            
+            st.success(f"📊 Estimated Payout at **{calc_mandi}** for **{farmer_qty} Kg** of **{calc_variety}**:")
+            res1, res2, res3 = st.columns(3)
+            res1.metric("Expected Avg Income", f"₹{est_avg_payout:,.0f}", f"Rate: ₹{m_avg:.0f}/kg")
+            res2.metric("Potential Max Income", f"₹{est_max_payout:,.0f}", f"Rate: ₹{m_max:.0f}/kg")
+            res3.info(f"💡 Target Mandi: **{calc_mandi}**")
+        else:
+            st.info("No rate data available for this selected combination today.")
+        st.markdown("</div>", unsafe_allow_html=True)
+
+    # 🏆 HIGHEST PAYING MANDIS
     st.markdown("---")
     st.markdown("### 🏆 Top Highest Paying Mandis Today")
     top_col1, top_col2 = st.columns(2)
@@ -163,6 +205,16 @@ try:
                 st.markdown(f"<div class='top-mandi-card'>🥇 <b>{row['Market Name']}</b> — Max: <b>₹{row['Max']:.0f}/kg</b> (Avg: ₹{row['Avg']:.0f})</div>", unsafe_allow_html=True)
         else:
             st.caption("No CB data for this date.")
+
+    # -------------------------------------------------------------------------
+    # NEW ENHANCEMENT 2: INSTANT MANDI SEARCH BAR
+    # -------------------------------------------------------------------------
+    st.markdown("---")
+    search_mandi = st.text_input("🔍 Search Mandi / Market Name (e.g. Ramanagara, Sidlaghatta, Kolar, Gokak):", "").strip()
+
+    if search_mandi:
+        df_bv = df_bv[df_bv['Market Name'].str.contains(search_mandi, case=False, na=False)]
+        df_cb = df_cb[df_cb['Market Name'].str.contains(search_mandi, case=False, na=False)]
 
     # =========================================================================
     # SECTION 1: LIVE MARKET TABLES (SIDE-BY-SIDE)
@@ -189,7 +241,7 @@ try:
                 height=350
             )
         else:
-            st.info("No Bi-Voltine (BV) entries found for this date.")
+            st.info("No Bi-Voltine (BV) entries found.")
 
     # RIGHT: CB TABLE
     with col_tbl_cb:
@@ -207,9 +259,9 @@ try:
                 height=350
             )
         else:
-            st.info("No Cross-Breed (CB) entries found for this date.")
+            st.info("No Cross-Breed (CB) entries found.")
 
-    # 📥 UPGRADE 3: CSV DOWNLOAD BUTTON
+    # CSV DOWNLOAD
     st.write("")
     csv_data = date_df.to_csv(index=False).encode('utf-8')
     st.download_button(
