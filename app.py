@@ -21,7 +21,6 @@ def get_profile_image():
                 encoded = base64.b64encode(f.read()).decode('utf-8')
                 ext = fname.split('.')[-1]
                 return f"data:image/{ext};base64,{encoded}"
-    # Professional fallback avatar if local file is missing
     return "https://ui-avatars.com/api/?name=Arun+Magar&background=2563EB&color=fff&size=128"
 
 img_src = get_profile_image()
@@ -211,28 +210,28 @@ TEXTS = {
     }
 }
 
-# 3. Modern CSS Styling
+# 3. High-Contrast CSS Override for Universal Readability (Light & Dark Mode)
 st.markdown("""
     <style>
+    /* Force clear fonts on system light/dark mode */
     .stApp {
-        background-color: #F8FAFC;
+        background-color: #F8FAFC !important;
+        color: #0F172A !important;
         font-family: 'Inter', system-ui, -apple-system, sans-serif;
     }
-    
-    .header-banner {
-        background: linear-gradient(135deg, #0F2B5C 0%, #1E40AF 50%, #2563EB 100%);
-        border-radius: 16px;
-        padding: 20px;
-        box-shadow: 0 10px 20px -5px rgba(15, 43, 92, 0.4);
-        margin-bottom: 25px;
+
+    /* Force label & paragraph contrast */
+    p, label, span, div {
+        color: #0F172A;
+        font-weight: 500;
     }
 
     .section-title {
         font-size: 20px;
         font-weight: 800;
-        color: #0F172A;
+        color: #0F172A !important;
         padding: 8px 12px;
-        background: #FFFFFF;
+        background: #FFFFFF !important;
         border-left: 5px solid #2563EB;
         border-radius: 4px;
         margin-top: 15px;
@@ -241,7 +240,8 @@ st.markdown("""
     }
 
     .top-mandi-card {
-        background: white;
+        background: white !important;
+        color: #0F172A !important;
         padding: 12px;
         border-radius: 10px;
         border-left: 4px solid #10B981;
@@ -250,7 +250,7 @@ st.markdown("""
     }
 
     div[data-testid="stDataFrame"] {
-        background: white;
+        background: white !important;
         border-radius: 12px;
         padding: 8px;
         border: 1px solid #E2E8F0;
@@ -267,46 +267,43 @@ with lang_col2:
 
 T = TEXTS.get(selected_lang, TEXTS["English"])
 
-# 5. RENDER BULLETPROOF EXECUTIVE BLUE BANNER
-st.markdown("<div class='header-banner'>", unsafe_allow_html=True)
-h_col1, h_col2, h_col3 = st.columns([1.2, 1.8, 1.2])
-
-with h_col1:
-    st.markdown(f"""
-        <div style="display:flex; align-items:center; gap:12px;">
-            <img src="{img_src}" style="width:75px; height:75px; border-radius:50%; object-fit:cover; border:3px solid #60A5FA;" alt="Arun B. Magar" />
-            <div>
-                <h4 style="margin:0; font-size:16px; color:white; font-weight:700;">ARUN B. MAGAR</h4>
-                <p style="margin:2px 0; font-size:12px; color:#93C5FD;">Founder, Silk Creators</p>
-                <p style="margin:0; font-size:12px;"><a href="https://wa.me/919637008151" target="_blank" style="color:#60A5FA; font-weight:bold; text-decoration:none;">📞 +91 9637008151</a></p>
+# 5. UNIFIED HIGH-CONTRAST BLUE EXECUTIVE HEADER BANNER
+st.markdown(f"""
+    <div style="background: linear-gradient(135deg, #0F2B5C 0%, #1E40AF 50%, #2563EB 100%); padding: 22px; border-radius: 16px; margin-bottom: 25px; box-shadow: 0 8px 16px rgba(15, 43, 92, 0.3);">
+        <div style="display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 15px;">
+            
+            <!-- LEFT: ARUN B. MAGAR PROFILE & WHATSAPP QR -->
+            <div style="display: flex; align-items: center; gap: 12px; background: rgba(255, 255, 255, 0.12); padding: 10px 14px; border-radius: 12px; border: 1px solid rgba(255, 255, 255, 0.25); min-width: 250px;">
+                <img src="{img_src}" style="width: 70px; height: 70px; border-radius: 50%; object-fit: cover; border: 3px solid #60A5FA; flex-shrink: 0;" alt="Arun B. Magar" />
+                <div>
+                    <h3 style="margin:0; font-size: 16px; font-weight: 800; color: #FFFFFF !important; text-shadow: 0 1px 2px rgba(0,0,0,0.5);">ARUN B. MAGAR</h3>
+                    <p style="margin:2px 0; font-size: 12px; color: #93C5FD !important; font-weight: 600;">Founder, Silk Creators</p>
+                    <p style="margin:2px 0; font-size: 12px;"><a href="https://wa.me/919637008151" target="_blank" style="color: #60A5FA !important; font-weight: 800; text-decoration: none;">📞 +91 9637008151</a></p>
+                    <div style="display: flex; align-items: center; gap: 6px; margin-top: 4px;">
+                        <img src="{wa_qr_url}" style="width: 32px; height: 32px; border-radius: 4px; border: 1px solid white;" alt="QR" />
+                        <span style="font-size: 10px; color: #E0F2FE !important; font-weight: 600;">Scan WhatsApp QR</span>
+                    </div>
+                </div>
             </div>
-        </div>
-        <div style="margin-top:8px; display:flex; align-items:center; gap:8px;">
-            <img src="{wa_qr_url}" style="width:36px; height:36px; border-radius:4px; border:1px solid white;" alt="WhatsApp QR" />
-            <span style="font-size:11px; color:#E0F2FE;">Scan WhatsApp QR</span>
-        </div>
-    """, unsafe_allow_html=True)
 
-with h_col2:
-    st.markdown(f"""
-        <div style="text-align:center;">
-            <h2 style="margin:0; color:white; font-size:24px; font-weight:800;">{T['app_title']}</h2>
-            <div style="font-size:14px; color:#FDE047; font-style:italic; font-weight:600; margin:4px 0;">"{T['app_motto']}"</div>
-            <p style="margin:0; font-size:12px; color:#E0F2FE;">{T['app_subtitle']}</p>
-        </div>
-    """, unsafe_allow_html=True)
+            <!-- CENTER: BRANDING -->
+            <div style="text-align: center; flex: 1; min-width: 260px; padding: 4px;">
+                <h1 style="margin:0; font-size: 24px; font-weight: 900; color: #FFFFFF !important; text-shadow: 0 2px 4px rgba(0,0,0,0.4);">{T['app_title']}</h1>
+                <div style="font-size: 14px; color: #FDE047 !important; font-style: italic; font-weight: 700; margin: 3px 0; text-shadow: 0 1px 2px rgba(0,0,0,0.5);">"{T['app_motto']}"</div>
+                <p style="margin:0; font-size: 12px; color: #E0F2FE !important; font-weight: 500;">{T['app_subtitle']}</p>
+            </div>
 
-with h_col3:
-    st.markdown("""
-        <div style="background:rgba(255,255,255,0.12); padding:10px; border-radius:10px; border:1px solid rgba(255,255,255,0.25); text-align:center;">
-            <div style="font-size:14px; font-weight:700; color:#FDE047;">🗺️ All-India Silk Farmers Map</div>
-            <div style="font-size:12px; color:white; margin:2px 0;">🌱 <b>12,000+</b> Mapped Farmers</div>
-            <div style="font-size:12px; color:white; margin-bottom:4px;">👁️ <b>9,99,620+</b> Map Views</div>
-            <a href="https://www.google.com/maps/d/u/0/viewer?mid=1EvaJdvlAcQf3m4cjrKkwKuzSDoIK8r4&ll=24.84266843022882%2C95.18937613831109&z=3" target="_blank" style="background:#10B981; color:white; padding:5px 12px; border-radius:5px; font-size:11px; font-weight:bold; text-decoration:none; display:inline-block;">📍 Explore Live Map</a>
-        </div>
-    """, unsafe_allow_html=True)
+            <!-- RIGHT: ALL-INDIA SILK FARMERS MAP -->
+            <div style="background: rgba(255, 255, 255, 0.12); padding: 10px 14px; border-radius: 12px; border: 1px solid rgba(255, 255, 255, 0.25); text-align: center; min-width: 240px;">
+                <h4 style="margin:0; font-size: 14px; font-weight: 800; color: #FDE047 !important; text-shadow: 0 1px 2px rgba(0,0,0,0.5);">🗺️ All-India Silk Farmers Map</h4>
+                <div style="font-size: 12px; color: #FFFFFF !important; font-weight: 700; margin: 2px 0;">🌱 12,000+ Mapped Farmers</div>
+                <div style="font-size: 12px; color: #FFFFFF !important; font-weight: 700; margin-bottom: 4px;">👁️ 9,99,620+ Map Views</div>
+                <a href="https://www.google.com/maps/d/u/0/viewer?mid=1EvaJdvlAcQf3m4cjrKkwKuzSDoIK8r4&ll=24.84266843022882%2C95.18937613831109&z=3" target="_blank" style="background: #10B981; color: white !important; padding: 5px 12px; border-radius: 6px; font-size: 11px; font-weight: 800; text-decoration: none; display: inline-block; box-shadow: 0 2px 4px rgba(0,0,0,0.2);">📍 Explore Live Farmers Map</a>
+            </div>
 
-st.markdown("</div>", unsafe_allow_html=True)
+        </div>
+    </div>
+""", unsafe_allow_html=True)
 
 SHEET_URL = "https://docs.google.com/spreadsheets/d/1ysO7bTj3SGMa64vwVcwnojAdxU0J2JkdxvjeKZvuRSU/gviz/tq?tqx=out:csv&sheet=India%20Market%20Rate"
 
