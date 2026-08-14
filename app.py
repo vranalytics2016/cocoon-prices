@@ -13,7 +13,7 @@ st.set_page_config(
     initial_sidebar_state="collapsed"
 )
 
-# Function to get sharp avatar image (with smart fallback)
+# Function to get sharp image in ORIGINAL rectangular shape (no circle crop)
 def get_profile_image():
     for fname in ["arun_magar.jpg", "arun_magar.png", "arun_magar.jpeg"]:
         if os.path.exists(fname):
@@ -24,8 +24,9 @@ def get_profile_image():
     return "https://ui-avatars.com/api/?name=Arun+Magar&background=2563EB&color=fff&size=128"
 
 img_src = get_profile_image()
+wa_qr_url = "https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=https://wa.me/919637008151"
 
-# 2. Multilingual Translations Dictionary (I18N)
+# 2. Complete Robust Multilingual Translations Dictionary (I18N)
 TEXTS = {
     "English": {
         "app_title": "🌾 Silk Creators - Live Cocoon Rates",
@@ -46,16 +47,17 @@ TEXTS = {
         "sec2_title": "📊 SECTION 2: MARKET VISUALIZATIONS & PRICE TRENDS",
         "bv_header": "⚪ Bi-Voltine (BV) – ದ್ವಿತಳಿ",
         "cb_header": "🟡 Cross-Breed (CB) – ಮಿಶ್ರತಳಿ",
-        "lowest": "Lowest",
-        "highest": "Highest",
-        "avg": "Average",
+        "lowest": "Lowest Rate",
+        "highest": "Highest Rate",
+        "avg": "Average Rate",
         "download_btn": "📥 Download Today's Rates Report (CSV / Excel)",
         "bar_title": "📊 Market Rate Comparison (🔴 Min | 🟢 Max | 🟡 Avg)",
         "line_title": "📈 Day-wise Price Trajectory Trend",
         "line_mandi_select": "🎯 Select Market for Day-wise Price Trajectory:",
         "exp_inc": "Expected Income (Avg)",
         "max_inc": "Max Potential Income",
-        "avg_rate": "Avg Rate"
+        "avg_rate": "Avg Rate",
+        "mandi_col": "Market Name"
     },
     "Kannada (ಕನ್ನಡ)": {
         "app_title": "🌾 ಸಿಲ್ಕ್ ಕ್ರಿಯೇಟರ್ಸ್ - ರೇಷ್ಮೆ ಮಾರುಕಟ್ಟೆ ಬೆಲೆಗಳು",
@@ -85,7 +87,8 @@ TEXTS = {
         "line_mandi_select": "🎯 ದರ ಟ್ರೆಂಡ್ ನೋಡಲು ಮಾರುಕಟ್ಟೆಯನ್ನು ಆಯ್ಕೆಮಾಡಿ:",
         "exp_inc": "ನಿರೀಕ್ಷಿತ ಆದಾಯ (ಸರಾಸರಿ)",
         "max_inc": "ಗರಿಷ್ಠ ಸಾಮರ್ಥ್ಯದ ಆದಾಯ",
-        "avg_rate": "ಸರಾಸರಿ ದರ"
+        "avg_rate": "ಸರಾಸರಿ ದರ",
+        "mandi_col": "ಮಾರುಕಟ್ಟೆ ಹೆಸರು"
     },
     "Hindi (हिंदी)": {
         "app_title": "🌾 सिल्क क्रिएटर्स - लाइव रेशम बाज़ार भाव",
@@ -115,7 +118,8 @@ TEXTS = {
         "line_mandi_select": "🎯 मूल्य रुझान देखने के लिए मंडी चुनें:",
         "exp_inc": "अनुमानित आय (औसत)",
         "max_inc": "अधिकतम संभावित आय",
-        "avg_rate": "औसत दर"
+        "avg_rate": "औसत दर",
+        "mandi_col": "मंडी नाम"
     },
     "Telugu (తెలుగు)": {
         "app_title": "🌾 సిల్క్ క్రియేటర్స్ - లైవ్ పట్టు కాయల ధరలు",
@@ -145,7 +149,8 @@ TEXTS = {
         "line_mandi_select": "🎯 ట్రెండ్ చూడటానికి మార్కెట్‌ను ఎంచుకోండి:",
         "exp_inc": "అంచనా ఆదాయం (సగటు)",
         "max_inc": "గరిష్ట సంభావ్య ఆదాయం",
-        "avg_rate": "సగటు ధర"
+        "avg_rate": "సగటు ధర",
+        "mandi_col": "మార్కెట్ పేరు"
     },
     "Marathi (मराठी)": {
         "app_title": "🌾 सिल्क क्रिएटर्स - लाईव्ह रेशीम कोष बाजारभाव",
@@ -175,7 +180,8 @@ TEXTS = {
         "line_mandi_select": "🎯 दर बदल पाहण्यासाठी बाजार समिती निवडा:",
         "exp_inc": "अंदाजे उत्पन्न (सरासरी)",
         "max_inc": "कमाल संभाव्य उत्पन्न",
-        "avg_rate": "सरासरी भाव"
+        "avg_rate": "सरासरी भाव",
+        "mandi_col": "बाजार समिती नाव"
     },
     "Tamil (தமிழ்)": {
         "app_title": "🌾 சில்க் கிரியேட்டர்ஸ் - நேரலை பட்டுக்கூடு சந்தை விலை",
@@ -205,11 +211,12 @@ TEXTS = {
         "line_mandi_select": "🎯 விலை போக்கைக் காண சந்தையைத் தேர்ந்தெடுக்கவும்:",
         "exp_inc": "எதிர்பார்க்கப்படும் வருமானம் (சராசரி)",
         "max_inc": "அதிகபட்ச சாத்தியமான வருமானம்",
-        "avg_rate": "சராசரி விலை"
+        "avg_rate": "சராசரி விலை",
+        "mandi_col": "சந்தை பெயர்"
     }
 }
 
-# 3. Universal CSS Rules for High Contrast Readability
+# 3. High-Contrast Readability Styling
 st.markdown("""
     <style>
     .stApp {
@@ -255,77 +262,46 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-# 4. Top Language Selector Bar
-lang_list = ["English", "Kannada (ಕನ್ನಡ)", "Hindi (हिंदी)", "Telugu (తెలుగు)", "Marathi (ಮರಾಠಿ)", "Tamil (தமிழ்)"]
+# 4. Global Language Selection Engine
+lang_list = ["English", "Kannada (ಕನ್ನಡ)", "Hindi (हिंदी)", "Telugu (తెలుగు)", "Marathi (मराठी)", "Tamil (தமிழ்)"]
 lang_col1, lang_col2 = st.columns([3, 1])
 
 with lang_col2:
-    selected_lang = st.selectbox("🌐 Choose Language / ಭಾಷೆ:", lang_list, index=0)
+    selected_lang = st.selectbox("🌐 Choose Language / ಭಾಷೆ:", lang_list, index=0, key="global_language_selector")
 
 T = TEXTS.get(selected_lang, TEXTS["English"])
 
-# 5. REDESIGNED TOP HERO SECTION (NATIVE STREAMLIT GLASSMORPHIC CARDS)
-with st.container():
-    col_founder, col_brand, col_map = st.columns([1.1, 1.8, 1.1])
+# 5. HIGH-CONTRAST EXECUTIVE BLUE HEADER BANNER (ORIGINAL RECTANGULAR PHOTO SHAPE)
+header_html = f"""<div style="background: linear-gradient(135deg, #0F2B5C 0%, #1E40AF 50%, #2563EB 100%); padding: 22px; border-radius: 16px; margin-bottom: 25px; box-shadow: 0 8px 16px rgba(15, 43, 92, 0.3);">
+<div style="display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 15px;">
+<div style="display: flex; align-items: center; gap: 12px; background: rgba(255, 255, 255, 0.12); padding: 10px 14px; border-radius: 12px; border: 1px solid rgba(255, 255, 255, 0.25); min-width: 270px;">
+<img src="{img_src}" style="height: 80px; width: auto; max-width: 90px; border-radius: 8px; object-fit: contain; border: 2px solid #60A5FA; flex-shrink: 0;" alt="Arun B. Magar" />
+<div>
+<h3 style="margin:0; font-size: 16px; font-weight: 800; color: #FFFFFF !important; text-shadow: 0 1px 2px rgba(0,0,0,0.5);">ARUN B. MAGAR</h3>
+<p style="margin:2px 0; font-size: 11px; color: #FDE047 !important; font-weight: 700;">Rtd. DySP, Maharashtra Police</p>
+<p style="margin:1px 0; font-size: 11px; color: #93C5FD !important; font-weight: 600;">Founder, Silk Creators</p>
+<p style="margin:2px 0; font-size: 12px;"><a href="https://wa.me/919637008151" target="_blank" style="color: #60A5FA !important; font-weight: 800; text-decoration: none;">📞 +91 9637008151</a></p>
+<div style="display: flex; align-items: center; gap: 6px; margin-top: 3px;">
+<img src="{wa_qr_url}" style="width: 30px; height: 30px; border-radius: 4px; border: 1px solid white;" alt="QR" />
+<span style="font-size: 10px; color: #E0F2FE !important; font-weight: 600;">Scan WhatsApp QR</span>
+</div>
+</div>
+</div>
+<div style="text-align: center; flex: 1; min-width: 260px; padding: 4px;">
+<h1 style="margin:0; font-size: 24px; font-weight: 900; color: #FFFFFF !important; text-shadow: 0 2px 4px rgba(0,0,0,0.4);">{T['app_title']}</h1>
+<div style="font-size: 14px; color: #FDE047 !important; font-style: italic; font-weight: 700; margin: 3px 0; text-shadow: 0 1px 2px rgba(0,0,0,0.5);">"{T['app_motto']}"</div>
+<p style="margin:0; font-size: 12px; color: #E0F2FE !important; font-weight: 500;">{T['app_subtitle']}</p>
+</div>
+<div style="background: rgba(255, 255, 255, 0.12); padding: 10px 14px; border-radius: 12px; border: 1px solid rgba(255, 255, 255, 0.25); text-align: center; min-width: 240px;">
+<h4 style="margin:0; font-size: 14px; font-weight: 800; color: #FDE047 !important; text-shadow: 0 1px 2px rgba(0,0,0,0.5);">🗺️ All-India Silk Farmers Map</h4>
+<div style="font-size: 12px; color: #FFFFFF !important; font-weight: 700; margin: 2px 0;">🌱 12,000+ Mapped Farmers</div>
+<div style="font-size: 12px; color: #FFFFFF !important; font-weight: 700; margin-bottom: 4px;">👁️ 9,99,620+ Map Views</div>
+<a href="https://www.google.com/maps/d/u/0/viewer?mid=1EvaJdvlAcQf3m4cjrKkwKuzSDoIK8r4&ll=24.84266843022882%2C95.18937613831109&z=3" target="_blank" style="background: #10B981; color: white !important; padding: 5px 12px; border-radius: 6px; font-size: 11px; font-weight: 800; text-decoration: none; display: inline-block; box-shadow: 0 2px 4px rgba(0,0,0,0.2);">📍 Explore Live Farmers Map</a>
+</div>
+</div>
+</div>"""
 
-    # LEFT: FOUNDER PROFILE
-    with col_founder:
-        st.markdown(
-            f"""
-            <div style="background: white; padding: 14px; border-radius: 12px; border: 1px solid #E2E8F0; border-left: 5px solid #2563EB; box-shadow: 0 2px 4px rgba(0,0,0,0.04);">
-                <div style="display: flex; align-items: center; gap: 12px;">
-                    <img src="{img_src}" style="width: 65px; height: 65px; border-radius: 50%; object-fit: cover; border: 2px solid #2563EB; flex-shrink: 0;" alt="Arun B. Magar" />
-                    <div>
-                        <h4 style="margin:0; font-size:16px; font-weight:800; color:#0F172A;">ARUN B. MAGAR</h4>
-                        <span style="background:#EFF6FF; color:#1D4ED8; font-size:11px; font-weight:700; padding:2px 8px; border-radius:12px; display:inline-block; margin-top:2px;">Founder, Silk Creators</span>
-                        <div style="margin-top:4px;">
-                            <a href="https://wa.me/919637008151" target="_blank" style="color:#10B981; font-weight:800; font-size:12px; text-decoration:none;">💬 +91 9637008151</a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            """,
-            unsafe_allow_html=True
-        )
-
-    # CENTER: PLATFORM BRANDING
-    with col_brand:
-        st.markdown(
-            f"""
-            <div style="background: white; padding: 14px; border-radius: 12px; border: 1px solid #E2E8F0; border-top: 5px solid #2563EB; text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.04);">
-                <div style="display: inline-block; background: #DCFCE7; color: #15803D; font-size: 11px; font-weight: 800; padding: 2px 10px; border-radius: 20px; margin-bottom: 4px;">
-                    🟢 LIVE MARKET RATES
-                </div>
-                <h2 style="margin:0; font-size: 22px; font-weight: 900; color: #0F172A;">{T['app_title']}</h2>
-                <div style="font-size: 13px; color: #D97706; font-style: italic; font-weight: 700; margin: 2px 0;">"{T['app_motto']}"</div>
-                <p style="margin:0; font-size: 11px; color: #64748B; font-weight: 600;">{T['app_subtitle']}</p>
-            </div>
-            """,
-            unsafe_allow_html=True
-        )
-
-    # RIGHT: ALL-INDIA SILK FARMERS MAP
-    with col_map:
-        st.markdown(
-            """
-            <div style="background: white; padding: 14px; border-radius: 12px; border: 1px solid #E2E8F0; border-right: 5px solid #10B981; text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.04);">
-                <div style="font-size:13px; font-weight:800; color:#0F172A;">🗺️ All-India Silk Farmers Network</div>
-                <div style="display:flex; justify-content:space-around; margin: 6px 0;">
-                    <div>
-                        <div style="font-size:14px; font-weight:800; color:#2563EB;">12,000+</div>
-                        <div style="font-size:10px; color:#64748B;">Mapped Farmers</div>
-                    </div>
-                    <div style="border-left:1px solid #E2E8F0;"></div>
-                    <div>
-                        <div style="font-size:14px; font-weight:800; color:#10B981;">9.99 Lakh+</div>
-                        <div style="font-size:10px; color:#64748B;">Map Views</div>
-                    </div>
-                </div>
-                <a href="https://www.google.com/maps/d/u/0/viewer?mid=1EvaJdvlAcQf3m4cjrKkwKuzSDoIK8r4&ll=24.84266843022882%2C95.18937613831109&z=3" target="_blank" style="background:#10B981; color:white !important; padding:5px 12px; border-radius:6px; font-size:11px; font-weight:800; text-decoration:none; display:block; margin-top:4px;">📍 Explore Farmers Map ↗</a>
-            </div>
-            """,
-            unsafe_allow_html=True
-        )
+st.markdown(header_html, unsafe_allow_html=True)
 
 SHEET_URL = "https://docs.google.com/spreadsheets/d/1ysO7bTj3SGMa64vwVcwnojAdxU0J2JkdxvjeKZvuRSU/gviz/tq?tqx=out:csv&sheet=India%20Market%20Rate"
 
@@ -432,8 +408,9 @@ try:
                     disp_bv[T['exp_inc']] = disp_bv['Expected Income (Avg)'].apply(lambda x: f"₹{x:,.0f}" if pd.notnull(x) else "-")
                     disp_bv[T['max_inc']] = disp_bv['Max Potential Income'].apply(lambda x: f"₹{x:,.0f}" if pd.notnull(x) else "-")
                     
+                    disp_bv_renamed = disp_bv.rename(columns={'Market Name': T['mandi_col']})
                     st.dataframe(
-                        disp_bv[['Market Name', T['avg_rate'], T['exp_inc'], T['max_inc']]],
+                        disp_bv_renamed[[T['mandi_col'], T['avg_rate'], T['exp_inc'], T['max_inc']]],
                         use_container_width=True,
                         hide_index=True
                     )
@@ -450,8 +427,9 @@ try:
                     disp_cb[T['exp_inc']] = disp_cb['Expected Income (Avg)'].apply(lambda x: f"₹{x:,.0f}" if pd.notnull(x) else "-")
                     disp_cb[T['max_inc']] = disp_cb['Max Potential Income'].apply(lambda x: f"₹{x:,.0f}" if pd.notnull(x) else "-")
                     
+                    disp_cb_renamed = disp_cb.rename(columns={'Market Name': T['mandi_col']})
                     st.dataframe(
-                        disp_cb[['Market Name', T['avg_rate'], T['exp_inc'], T['max_inc']]],
+                        disp_cb_renamed[[T['mandi_col'], T['avg_rate'], T['exp_inc'], T['max_inc']]],
                         use_container_width=True,
                         hide_index=True
                     )
