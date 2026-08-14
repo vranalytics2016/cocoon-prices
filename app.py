@@ -24,7 +24,6 @@ def get_profile_image():
     return "https://ui-avatars.com/api/?name=Arun+Magar&background=2563EB&color=fff&size=128"
 
 img_src = get_profile_image()
-wa_qr_url = "https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=https://wa.me/919637008151"
 
 # 2. Complete Robust Multilingual Translations Dictionary (I18N)
 TEXTS = {
@@ -263,7 +262,7 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # 4. Global Language Selection Engine
-lang_list = ["English", "Kannada (ಕನ್ನಡ)", "Hindi (हिंदी)", "Telugu (తెలుగు)", "Marathi (मराठी)", "Tamil (தமிழ்)"]
+lang_list = ["English", "Kannada (ಕನ್ನಡ)", "Hindi (हिंदी)", "Telugu (తెలుగు)", "Marathi (ಮರಾಠಿ)", "Tamil (தமிழ்)"]
 lang_col1, lang_col2 = st.columns([3, 1])
 
 with lang_col2:
@@ -271,37 +270,69 @@ with lang_col2:
 
 T = TEXTS.get(selected_lang, TEXTS["English"])
 
-# 5. HIGH-CONTRAST EXECUTIVE BLUE HEADER BANNER (ORIGINAL RECTANGULAR PHOTO SHAPE)
-header_html = f"""<div style="background: linear-gradient(135deg, #0F2B5C 0%, #1E40AF 50%, #2563EB 100%); padding: 22px; border-radius: 16px; margin-bottom: 25px; box-shadow: 0 8px 16px rgba(15, 43, 92, 0.3);">
-<div style="display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 15px;">
-<div style="display: flex; align-items: center; gap: 12px; background: rgba(255, 255, 255, 0.12); padding: 10px 14px; border-radius: 12px; border: 1px solid rgba(255, 255, 255, 0.25); min-width: 270px;">
-<img src="{img_src}" style="height: 80px; width: auto; max-width: 90px; border-radius: 8px; object-fit: contain; border: 2px solid #60A5FA; flex-shrink: 0;" alt="Arun B. Magar" />
-<div>
-<h3 style="margin:0; font-size: 16px; font-weight: 800; color: #FFFFFF !important; text-shadow: 0 1px 2px rgba(0,0,0,0.5);">ARUN B. MAGAR</h3>
-<p style="margin:2px 0; font-size: 11px; color: #FDE047 !important; font-weight: 700;">Rtd. DySP, Maharashtra Police</p>
-<p style="margin:1px 0; font-size: 11px; color: #93C5FD !important; font-weight: 600;">Founder, Silk Creators</p>
-<p style="margin:2px 0; font-size: 12px;"><a href="https://wa.me/919637008151" target="_blank" style="color: #60A5FA !important; font-weight: 800; text-decoration: none;">📞 +91 9637008151</a></p>
-<div style="display: flex; align-items: center; gap: 6px; margin-top: 3px;">
-<img src="{wa_qr_url}" style="width: 30px; height: 30px; border-radius: 4px; border: 1px solid white;" alt="QR" />
-<span style="font-size: 10px; color: #E0F2FE !important; font-weight: 600;">Scan WhatsApp QR</span>
-</div>
-</div>
-</div>
-<div style="text-align: center; flex: 1; min-width: 260px; padding: 4px;">
-<h1 style="margin:0; font-size: 24px; font-weight: 900; color: #FFFFFF !important; text-shadow: 0 2px 4px rgba(0,0,0,0.4);">{T['app_title']}</h1>
-<div style="font-size: 14px; color: #FDE047 !important; font-style: italic; font-weight: 700; margin: 3px 0; text-shadow: 0 1px 2px rgba(0,0,0,0.5);">"{T['app_motto']}"</div>
-<p style="margin:0; font-size: 12px; color: #E0F2FE !important; font-weight: 500;">{T['app_subtitle']}</p>
-</div>
-<div style="background: rgba(255, 255, 255, 0.12); padding: 10px 14px; border-radius: 12px; border: 1px solid rgba(255, 255, 255, 0.25); text-align: center; min-width: 240px;">
-<h4 style="margin:0; font-size: 14px; font-weight: 800; color: #FDE047 !important; text-shadow: 0 1px 2px rgba(0,0,0,0.5);">🗺️ All-India Silk Farmers Map</h4>
-<div style="font-size: 12px; color: #FFFFFF !important; font-weight: 700; margin: 2px 0;">🌱 12,000+ Mapped Farmers</div>
-<div style="font-size: 12px; color: #FFFFFF !important; font-weight: 700; margin-bottom: 4px;">👁️ 9,99,620+ Map Views</div>
-<a href="https://www.google.com/maps/d/u/0/viewer?mid=1EvaJdvlAcQf3m4cjrKkwKuzSDoIK8r4&ll=24.84266843022882%2C95.18937613831109&z=3" target="_blank" style="background: #10B981; color: white !important; padding: 5px 12px; border-radius: 6px; font-size: 11px; font-weight: 800; text-decoration: none; display: inline-block; box-shadow: 0 2px 4px rgba(0,0,0,0.2);">📍 Explore Live Farmers Map</a>
-</div>
-</div>
-</div>"""
+# 5. REDESIGNED TOP HERO SECTION (3 MODERN WHITE GLASSMORPHIC CARDS)
+with st.container():
+    col_founder, col_brand, col_map = st.columns([1.1, 1.8, 1.1])
 
-st.markdown(header_html, unsafe_allow_html=True)
+    # LEFT: FOUNDER PROFILE CARD
+    with col_founder:
+        st.markdown(
+            f"""
+            <div style="background: #FFFFFF; padding: 14px; border-radius: 12px; border: 1px solid #E2E8F0; border-left: 5px solid #2563EB; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);">
+                <div style="display: flex; align-items: center; gap: 12px;">
+                    <img src="{img_src}" style="height: 75px; width: auto; max-width: 85px; border-radius: 8px; object-fit: contain; border: 2px solid #2563EB; flex-shrink: 0;" alt="Arun B. Magar" />
+                    <div>
+                        <h4 style="margin:0; font-size:15px; font-weight:800; color:#0F172A;">ARUN B. MAGAR</h4>
+                        <span style="background:#EFF6FF; color:#1D4ED8; font-size:10px; font-weight:700; padding:2px 6px; border-radius:10px; display:inline-block; margin-top:2px;">Rtd. DySP, Maharashtra Police</span>
+                        <div style="font-size:11px; font-weight:700; color:#475569; margin-top:1px;">Founder, Silk Creators</div>
+                        <div style="margin-top:3px;">
+                            <a href="https://wa.me/919637008151" target="_blank" style="color:#10B981; font-weight:800; font-size:12px; text-decoration:none;">💬 +91 9637008151</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            """,
+            unsafe_allow_html=True
+        )
+
+    # CENTER: BRANDING HUB
+    with col_brand:
+        st.markdown(
+            f"""
+            <div style="background: #FFFFFF; padding: 14px; border-radius: 12px; border: 1px solid #E2E8F0; border-top: 5px solid #2563EB; text-align: center; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);">
+                <div style="display: inline-block; background: #DCFCE7; color: #15803D; font-size: 11px; font-weight: 800; padding: 2px 10px; border-radius: 20px; margin-bottom: 4px;">
+                    🟢 LIVE MARKET RATES
+                </div>
+                <h2 style="margin:0; font-size: 22px; font-weight: 900; color: #0F172A;">{T['app_title']}</h2>
+                <div style="font-size: 13px; color: #D97706; font-style: italic; font-weight: 700; margin: 2px 0;">"{T['app_motto']}"</div>
+                <p style="margin:0; font-size: 11px; color: #64748B; font-weight: 600;">{T['app_subtitle']}</p>
+            </div>
+            """,
+            unsafe_allow_html=True
+        )
+
+    # RIGHT: ALL-INDIA SILK FARMERS MAP
+    with col_map:
+        st.markdown(
+            """
+            <div style="background: #FFFFFF; padding: 14px; border-radius: 12px; border: 1px solid #E2E8F0; border-right: 5px solid #10B981; text-align: center; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);">
+                <div style="font-size:13px; font-weight:800; color:#0F172A;">🗺️ All-India Silk Farmers Network</div>
+                <div style="display:flex; justify-content:space-around; margin: 6px 0;">
+                    <div>
+                        <div style="font-size:14px; font-weight:800; color:#2563EB;">12,000+</div>
+                        <div style="font-size:10px; color:#64748B;">Mapped Farmers</div>
+                    </div>
+                    <div style="border-left:1px solid #E2E8F0;"></div>
+                    <div>
+                        <div style="font-size:14px; font-weight:800; color:#10B981;">9.99 Lakh+</div>
+                        <div style="font-size:10px; color:#64748B;">Map Views</div>
+                    </div>
+                </div>
+                <a href="https://www.google.com/maps/d/u/0/viewer?mid=1EvaJdvlAcQf3m4cjrKkwKuzSDoIK8r4&ll=24.84266843022882%2C95.18937613831109&z=3" target="_blank" style="background:#10B981; color:white !important; padding:5px 12px; border-radius:6px; font-size:11px; font-weight:800; text-decoration:none; display:block; margin-top:4px;">📍 Explore Live Farmers Map ↗</a>
+            </div>
+            """,
+            unsafe_allow_html=True
+        )
 
 SHEET_URL = "https://docs.google.com/spreadsheets/d/1ysO7bTj3SGMa64vwVcwnojAdxU0J2JkdxvjeKZvuRSU/gviz/tq?tqx=out:csv&sheet=India%20Market%20Rate"
 
