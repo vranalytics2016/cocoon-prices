@@ -2,6 +2,8 @@ import streamlit as st
 import pandas as pd
 import plotly.express as px
 import urllib.parse
+import base64
+import os
 
 # 1. Page Configuration
 st.set_page_config(
@@ -11,10 +13,29 @@ st.set_page_config(
     initial_sidebar_state="collapsed"
 )
 
+# Function to convert local image to Base64 for sharp rendering
+def get_image_base64(image_path):
+    if os.path.exists(image_path):
+        with open(image_path, "rb") as img_file:
+            return base64.b64encode(img_file.read()).decode('utf-8')
+    return None
+
+# Convert Arun Magar photo if available
+photo_base64 = get_image_base64("arun_magar.jpg")
+if photo_base64:
+    img_src = f"data:image/jpeg;base64,{photo_base64}"
+else:
+    # Fallback high-res placeholder if photo file is missing
+    img_src = "https://raw.githubusercontent.com/streamlit/streamlit/main/docs/static/logo.png"
+
+# WhatsApp QR Code Link
+wa_qr_url = "https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=https://wa.me/919637008151"
+
 # 2. Multilingual Translations Dictionary (I18N)
 TEXTS = {
     "English": {
         "app_title": "🌾 Silk Creators - Live Cocoon Rates",
+        "app_motto": "Cocooning Dreams, Creating Futures",
         "app_subtitle": "Dedicated to Farmers Service | Live Cocoon Market Rates across India",
         "select_date": "📅 Select Date:",
         "refresh_btn": "🔄 Refresh Data",
@@ -44,6 +65,7 @@ TEXTS = {
     },
     "Kannada (ಕನ್ನಡ)": {
         "app_title": "🌾 ಸಿಲ್ಕ್ ಕ್ರಿಯೇಟರ್ಸ್ - ರೇಷ್ಮೆ ಮಾರುಕಟ್ಟೆ ಬೆಲೆಗಳು",
+        "app_motto": "ರೇಷ್ಮೆ ಮಾರುಕಟ್ಟೆಯ ಕನಸುಗಳಿಗೆ ಹೊಸ ಜೀವ",
         "app_subtitle": "ರೈತರ ಸೇವೆಗೆ ಮೀಸಲಾಗಿದೆ | ಭಾರತದಾದ್ಯಂತ ಲೈವ್ ರೇಷ್ಮೆ ಮಾರುಕಟ್ಟೆ ದರಗಳು",
         "select_date": "📅 ದಿನಾಂಕವನ್ನು ಆಯ್ಕೆಮಾಡಿ:",
         "refresh_btn": "🔄 ನವೀಕರಿಸಿ (Refresh)",
@@ -73,6 +95,7 @@ TEXTS = {
     },
     "Hindi (हिंदी)": {
         "app_title": "🌾 सिल्क क्रिएटर्स - लाइव रेशम बाज़ार भाव",
+        "app_motto": "रेशम उद्योग में किसानों का विश्वास",
         "app_subtitle": "किसानों की सेवा में समर्पित | भारतभर के रेशम बाज़ार रेट",
         "select_date": "📅 तिथि चुनें:",
         "refresh_btn": "🔄 ताज़ा करें (Refresh)",
@@ -102,6 +125,7 @@ TEXTS = {
     },
     "Telugu (తెలుగు)": {
         "app_title": "🌾 సిల్క్ క్రియేటర్స్ - లైవ్ పట్టు కాయల ధరలు",
+        "app_motto": "పట్టు రైతుల అభివృద్ధికి మా కట్టుబాటు",
         "app_subtitle": "రైతుల సేవలో | భారతదేశమంతటా లైవ్ మార్కెట్ ధరలు",
         "select_date": "📅 తేదీని ఎంచుకోండి:",
         "refresh_btn": "🔄 రిఫ్రెష్ (Refresh)",
@@ -131,6 +155,7 @@ TEXTS = {
     },
     "Marathi (मराठी)": {
         "app_title": "🌾 सिल्क क्रिएटर्स - लाईव्ह रेशीम कोष बाजारभाव",
+        "app_motto": "रेशीम उत्पादक शेतकऱ्यांच्या सेवेसाठी",
         "app_subtitle": "शेतकऱ्यांच्या सेवेसाठी | भारतातील थेट बाजारभाव",
         "select_date": "📅 दिनांक निवडा:",
         "refresh_btn": "🔄 ताजे करा (Refresh)",
@@ -160,6 +185,7 @@ TEXTS = {
     },
     "Tamil (தமிழ்)": {
         "app_title": "🌾 சில்க் கிரியேட்டர்ஸ் - நேரலை பட்டுக்கூடு சந்தை விலை",
+        "app_motto": "பட்டு விவசாயிகளின் முன்னேற்றத்திற்காக",
         "app_subtitle": "விவசாயிகளின் சேவையில் | இந்தியா முழுவதுமான நேரலை விலை",
         "select_date": "📅 தேதியைத் தேர்ந்தெடுக்கவும்:",
         "refresh_btn": "🔄 புதுப்பி (Refresh)",
@@ -189,27 +215,89 @@ TEXTS = {
     }
 }
 
-# 3. Modern UI CSS Styling
-st.markdown("""
+# 3. Modern CSS Layout for Top Blue Executive Banner
+st.markdown(f"""
     <style>
-    .stApp {
+    .stApp {{
         background-color: #F8FAFC;
         font-family: 'Inter', system-ui, -apple-system, sans-serif;
-    }
+    }}
     
-    .brand-header {
-        background: linear-gradient(135deg, #1E3A8A 0%, #2563EB 100%);
+    /* Top Executive Blue Banner */
+    .executive-header {{
+        background: linear-gradient(135deg, #0F2B5C 0%, #1E40AF 50%, #2563EB 100%);
         color: white;
-        padding: 22px;
+        padding: 20px;
         border-radius: 16px;
-        text-align: center;
-        margin-bottom: 20px;
-        box-shadow: 0 10px 15px -3px rgba(37, 99, 235, 0.2);
-    }
-    .brand-header h1 { font-size: 26px; margin: 0; font-weight: 800; }
-    .brand-header p { font-size: 14px; margin-top: 6px; opacity: 0.95; }
+        box-shadow: 0 10px 20px -5px rgba(15, 43, 92, 0.4);
+        margin-bottom: 25px;
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: space-between;
+    }}
 
-    .section-title {
+    /* Left: Profile Card */
+    .profile-box {{
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        background: rgba(255, 255, 255, 0.1);
+        padding: 12px 16px;
+        border-radius: 12px;
+        backdrop-filter: blur(5px);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+    }}
+    .profile-img {{
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 3px solid #60A5FA;
+        box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    }}
+    .profile-info h3 {{ margin: 0; font-size: 17px; font-weight: 700; color: #FFFFFF; }}
+    .profile-info p {{ margin: 2px 0 0 0; font-size: 13px; color: #93C5FD; }}
+    .profile-info a {{ color: #60A5FA; font-weight: bold; text-decoration: none; font-size: 13px; }}
+
+    /* Center: Branding */
+    .center-branding {{
+        text-align: center;
+        padding: 10px;
+        flex: 1;
+        min-width: 280px;
+    }}
+    .center-branding h1 {{ margin: 0; font-size: 26px; font-weight: 800; color: #FFFFFF; }}
+    .center-branding .motto {{ font-size: 15px; font-style: italic; color: #FDE047; font-weight: 600; margin: 4px 0; }}
+    .center-branding p {{ font-size: 12px; margin: 0; opacity: 0.9; color: #E0F2FE; }}
+
+    /* Right: All-India Farmers Map Card */
+    .map-box {{
+        background: rgba(255, 255, 255, 0.12);
+        padding: 12px 16px;
+        border-radius: 12px;
+        border: 1px solid rgba(255, 255, 255, 0.25);
+        text-align: center;
+        max-width: 320px;
+    }}
+    .map-box h4 {{ margin: 0; font-size: 15px; font-weight: 700; color: #FDE047; }}
+    .map-box .stat {{ font-size: 13px; color: #FFFFFF; font-weight: 600; margin: 4px 0; }}
+    .map-btn {{
+        display: inline-block;
+        background: #10B981;
+        color: white !important;
+        padding: 6px 14px;
+        border-radius: 6px;
+        font-size: 12px;
+        font-weight: bold;
+        text-decoration: none;
+        margin-top: 6px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    }}
+    .map-btn:hover {{ background: #059669; }}
+
+    /* Section Headers */
+    .section-title {{
         font-size: 20px;
         font-weight: 800;
         color: #0F172A;
@@ -220,47 +308,75 @@ st.markdown("""
         margin-top: 15px;
         margin-bottom: 15px;
         box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-    }
+    }}
 
-    .top-mandi-card {
+    .top-mandi-card {{
         background: white;
         padding: 12px;
         border-radius: 10px;
         border-left: 4px solid #10B981;
         box-shadow: 0 2px 4px rgba(0,0,0,0.04);
         margin-bottom: 8px;
-    }
+    }}
 
-    div[data-testid="stDataFrame"] {
+    div[data-testid="stDataFrame"] {{
         background: white;
         border-radius: 12px;
         padding: 8px;
         border: 1px solid #E2E8F0;
-    }
+    }}
     </style>
 """, unsafe_allow_html=True)
 
-# 4. Top Language Selector Bar
+# 4. Language Selector Bar
 lang_list = ["English", "Kannada (ಕನ್ನಡ)", "Hindi (हिंदी)", "Telugu (తెలుగు)", "Marathi (मराठी)", "Tamil (தமிழ்)"]
 lang_col1, lang_col2 = st.columns([3, 1])
 
 with lang_col2:
     selected_lang = st.selectbox("🌐 Choose Language / ಭಾಷೆ:", lang_list, index=0)
 
-# Get current dictionary
+# Selected Translation Dictionary
 T = TEXTS.get(selected_lang, TEXTS["English"])
 
-# Branding Banner Header
+# 5. RENDER BLUE EXECUTIVE HEADER BANNER
 st.markdown(f"""
-    <div class='brand-header'>
-        <h1>{T['app_title']}</h1>
-        <p>{T['app_subtitle']}</p>
+    <div class='executive-header'>
+        <!-- LEFT: OWNER PROFILE & WHATSAPP QR -->
+        <div class='profile-box'>
+            <img src='{img_src}' class='profile-img' alt='Arun B. Magar' />
+            <div class='profile-info'>
+                <h3>ARUN B. MAGAR</h3>
+                <p>Founder, Silk Creators</p>
+                <p>📞 <a href='https://wa.me/919637008151' target='_blank'>+91 9637008151</a></p>
+                <div style="margin-top:5px; display:flex; align-items:center; gap:6px;">
+                    <img src="{wa_qr_url}" style="width:38px; height:38px; border-radius:4px; border:1px solid white;" title="Scan to Chat on WhatsApp" />
+                    <span style="font-size:10px; color:#E0F2FE;">Scan WhatsApp QR</span>
+                </div>
+            </div>
+        </div>
+        
+        <!-- CENTER: BRANDING -->
+        <div class='center-branding'>
+            <h1>{T['app_title']}</h1>
+            <div class='motto'>"{T['app_motto']}"</div>
+            <p>{T['app_subtitle']}</p>
+        </div>
+
+        <!-- RIGHT: ALL-INDIA SERICULTURE FARMERS MAP -->
+        <div class='map-box'>
+            <h4>🗺️ All-India Silk Farmers Map</h4>
+            <div class='stat'>🌱 <b>12,000+</b> Mapped Farmers</div>
+            <div class='stat'>👁️ <b>9,99,620+</b> Map Views</div>
+            <a href='https://www.google.com/maps/d/u/0/viewer?mid=1EvaJdvlAcQf3m4cjrKkwKuzSDoIK8r4&ll=24.84266843022882%2C95.18937613831109&z=3' target='_blank' class='map-btn'>
+                📍 Explore Live Farmers Map
+            </a>
+        </div>
     </div>
 """, unsafe_allow_html=True)
 
 SHEET_URL = "https://docs.google.com/spreadsheets/d/1ysO7bTj3SGMa64vwVcwnojAdxU0J2JkdxvjeKZvuRSU/gviz/tq?tqx=out:csv&sheet=India%20Market%20Rate"
 
-# 5. Data Loader
+# 6. Data Loader
 @st.cache_data(ttl=30)
 def load_data():
     df = pd.read_csv(SHEET_URL)
