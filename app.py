@@ -44,15 +44,6 @@ st.markdown("""
         box-shadow: 0 1px 3px rgba(0,0,0,0.05);
     }
 
-    .calc-card {
-        background: #FFFFFF;
-        padding: 18px;
-        border-radius: 12px;
-        border: 2px solid #2563EB;
-        box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
-        margin-bottom: 20px;
-    }
-
     .top-mandi-card {
         background: white;
         padding: 12px;
@@ -150,40 +141,67 @@ try:
         """, unsafe_allow_html=True)
 
     # -------------------------------------------------------------------------
-    # NEW ENHANCEMENT 1: FARMER COCOON INCOME ESTIMATOR / CALCULATOR WIDGET
+    # 🧮 ENHANCED FARMER INCOME ESTIMATOR WITH SIDE-BY-SIDE ALL-MANDI TABLES
     # -------------------------------------------------------------------------
-    with st.expander("🧮 **Farmer Revenue Estimator / ಆದಾಯ ಲೆಕ್ಕಾಚಾರ (Click to Calculate Your Payout)**", expanded=False):
-        st.markdown("<div class='calc-card'>", unsafe_allow_html=True)
-        st.subheader("💰 Calculate Your Estimated Harvest Payout")
+    with st.expander("🧮 **Farmer Revenue Estimator / ಆದಾಯ ಲೆಕ್ಕಾಚಾರ (Compare Income Across All Mandis)**", expanded=True):
+        st.subheader("💰 Compare Your Expected Income Across All Mandis")
         
-        c_calc1, c_calc2, c_calc3 = st.columns(3)
-        with c_calc1:
-            farmer_qty = st.number_input("Enter Harvest Weight (Kg):", min_value=10, max_value=5000, value=100, step=10)
-        with c_calc2:
-            calc_variety = st.selectbox("Select Variety:", ["Bi-Voltine (BV)", "Cross-Breed (CB)"])
-        with c_calc3:
-            all_mandis = sorted([str(m) for m in date_df['Market Name'].dropna().unique() if str(m).strip() != ''])
-            calc_mandi = st.selectbox("Select Target Mandi:", all_mandis if all_mandis else ["Ramanagara"])
+        col_input, col_info = st.columns([1, 2])
+        with col_input:
+            farmer_qty = st.number_input("Enter your Harvest Weight (in Kg):", min_value=1, max_value=10000, value=100, step=10)
+        
+        with col_info:
+            st.info(f"💡 Showing total payout comparisons for **{farmer_qty} Kg** of cocoons based on **{selected_date}** rates.")
 
-        # Calculate estimated revenue
-        calc_match = date_df[(date_df['Variety_Clean'] == calc_variety) & (date_df['Market Name'] == calc_mandi)]
-        if not calc_match.empty and 'Avg' in calc_match.columns:
-            m_avg = calc_match['Avg'].values[0]
-            m_max = calc_match['Max'].values[0]
+        # Create Income Comparisons for all Mandis
+        calc_df = date_df.copy()
+        
+        if not calc_df.empty:
+            calc_df['Expected Income (Avg)'] = calc_df['Avg'] * farmer_qty
+            calc_df['Max Potential Income'] = calc_df['Max'] * farmer_qty
             
-            est_avg_payout = farmer_qty * m_avg
-            est_max_payout = farmer_qty * m_max
-            
-            st.success(f"📊 Estimated Payout at **{calc_mandi}** for **{farmer_qty} Kg** of **{calc_variety}**:")
-            res1, res2, res3 = st.columns(3)
-            res1.metric("Expected Avg Income", f"₹{est_avg_payout:,.0f}", f"Rate: ₹{m_avg:.0f}/kg")
-            res2.metric("Potential Max Income", f"₹{est_max_payout:,.0f}", f"Rate: ₹{m_max:.0f}/kg")
-            res3.info(f"💡 Target Mandi: **{calc_mandi}**")
-        else:
-            st.info("No rate data available for this selected combination today.")
-        st.markdown("</div>", unsafe_allow_html=True)
+            calc_bv = calc_df[calc_df['Variety_Clean'] == 'Bi-Voltine (BV)'].copy()
+            calc_cb = calc_df[calc_df['Variety_Clean'] == 'Cross-Breed (CB)'].copy()
 
-    # 🏆 HIGHEST PAYING MANDIS
+            col_calc_bv, col_calc_cb = st.columns(2)
+
+            # --- BV INCOME TABLE ---
+            with col_calc_bv:
+                st.markdown(f"#### ⚪ Bi-Voltine (BV) Income Comparison ({farmer_qty} Kg)")
+                if not calc_bv.empty:
+                    disp_bv = calc_bv[['Market Name', 'Avg', 'Max', 'Expected Income (Avg)', 'Max Potential Income']].sort_values(by='Expected Income (Avg)', ascending=False).copy()
+                    
+                    disp_bv['Avg Rate'] = disp_bv['Avg'].apply(lambda x: f"₹{x:.0f}/kg" if pd.notnull(x) else "-")
+                    disp_bv['Expected Income (Avg)'] = disp_bv['Expected Income (Avg)'].apply(lambda x: f"₹{x:,.0f}" if pd.notnull(x) else "-")
+                    disp_bv['Max Potential Income'] = disp_bv['Max Potential Income'].apply(lambda x: f"₹{x:,.0f}" if pd.notnull(x) else "-")
+                    
+                    st.dataframe(
+                        disp_bv[['Market Name', 'Avg Rate', 'Expected Income (Avg)', 'Max Potential Income']],
+                        use_container_width=True,
+                        hide_index=True
+                    )
+                else:
+                    st.caption("No BV rate data available for this date.")
+
+            # --- CB INCOME TABLE ---
+            with col_calc_cb:
+                st.markdown(f"#### 🟡 Cross-Breed (CB) Income Comparison ({farmer_qty} Kg)")
+                if not calc_cb.empty:
+                    disp_cb = calc_cb[['Market Name', 'Avg', 'Max', 'Expected Income (Avg)', 'Max Potential Income']].sort_values(by='Expected Income (Avg)', ascending=False).copy()
+                    
+                    disp_cb['Avg Rate'] = disp_cb['Avg'].apply(lambda x: f"₹{x:.0f}/kg" if pd.notnull(x) else "-")
+                    disp_cb['Expected Income (Avg)'] = disp_cb['Expected Income (Avg)'].apply(lambda x: f"₹{x:,.0f}" if pd.notnull(x) else "-")
+                    disp_cb['Max Potential Income'] = disp_cb['Max Potential Income'].apply(lambda x: f"₹{x:,.0f}" if pd.notnull(x) else "-")
+                    
+                    st.dataframe(
+                        disp_cb[['Market Name', 'Avg Rate', 'Expected Income (Avg)', 'Max Potential Income']],
+                        use_container_width=True,
+                        hide_index=True
+                    )
+                else:
+                    st.caption("No CB rate data available for this date.")
+
+    # 🏆 HIGHEST PAYING MANDIS TODAY
     st.markdown("---")
     st.markdown("### 🏆 Top Highest Paying Mandis Today")
     top_col1, top_col2 = st.columns(2)
@@ -206,9 +224,7 @@ try:
         else:
             st.caption("No CB data for this date.")
 
-    # -------------------------------------------------------------------------
-    # NEW ENHANCEMENT 2: INSTANT MANDI SEARCH BAR
-    # -------------------------------------------------------------------------
+    # INSTANT MANDI SEARCH BAR
     st.markdown("---")
     search_mandi = st.text_input("🔍 Search Mandi / Market Name (e.g. Ramanagara, Sidlaghatta, Kolar, Gokak):", "").strip()
 
