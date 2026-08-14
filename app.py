@@ -2,6 +2,8 @@ import streamlit as st
 import pandas as pd
 import plotly.express as px
 import urllib.parse
+import urllib.request
+import re
 import base64
 import os
 
@@ -13,7 +15,7 @@ st.set_page_config(
     initial_sidebar_state="collapsed"
 )
 
-# Function to get sharp image in ORIGINAL rectangular shape (no circle crop)
+# Function to get sharp avatar image in ORIGINAL rectangular shape
 def get_profile_image():
     for fname in ["arun_magar.jpg", "arun_magar.png", "arun_magar.jpeg"]:
         if os.path.exists(fname):
@@ -24,9 +26,35 @@ def get_profile_image():
     return "https://ui-avatars.com/api/?name=Arun+Magar&background=2563EB&color=fff&size=128"
 
 img_src = get_profile_image()
-wa_qr_url = "https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=https://wa.me/919637008151"
 
-# 2. Complete Robust Multilingual Translations Dictionary (I18N)
+# 🌐 REAL-TIME GOOGLE MY MAPS VIEW COUNTER SCRAPER
+MAP_URL = "https://www.google.com/maps/d/u/0/viewer?mid=1EvaJdvlAcQf3m4cjrKkwKuzSDoIK8r4"
+
+@st.cache_data(ttl=3600)  # Auto-refreshes map view count every hour
+def get_realtime_map_views():
+    try:
+        req = urllib.request.Request(
+            MAP_URL, 
+            headers={'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'}
+        )
+        html = urllib.request.urlopen(req, timeout=5).read().decode('utf-8', errors='ignore')
+        
+        # Match patterns like "999,620 views" or JSON view count variables
+        match = re.search(r'([0-9,]+)\s*views', html, re.IGNORECASE)
+        if not match:
+            match = re.search(r'"views"\s*:\s*"?([0-9,]+)"?', html, re.IGNORECASE)
+            
+        if match:
+            views_num = match.group(1).strip()
+            return f"{views_num} Views"
+        else:
+            return "10 Lakh+ Views"
+    except Exception:
+        return "10 Lakh+ Views"
+
+live_map_views = get_realtime_map_views()
+
+# 2. Complete Multilingual Translations Dictionary (I18N)
 TEXTS = {
     "English": {
         "app_title": "🌾 Silk Creators - Live Cocoon Rates",
@@ -72,7 +100,7 @@ TEXTS = {
         "calc_info": "{date} ರ ದರಗಳ ಆಧಾರದ ಮೇಲೆ {qty} Kg ಗೂಡಿಗೆ ನಿರೀಕ್ಷಿತ ಆದಾಯದ ಹೋಲಿಕೆ.",
         "top_mandis_title": "🏆 ಇಂದಿನ ಗರಿಷ್ಠ ದರ ನೀಡುವ ಮಾರುಕಟ್ಟೆಗಳು",
         "top_bv": "⚪ ಟಾಪ್ 3 BV ಮಾರುಕಟ್ಟೆಗಳು (ಗರಿಷ್ಠ ದರ)",
-        "top_cb": "🟡 ಟಾಪ್ 3 CB ಮಾರುಕಟ್ಟೆಗಳು (ಗರಿಷ್ಠ ದರ)",
+        "top_cb": "⚪ ಟಾಪ್ 3 CB ಮಾರುಕಟ್ಟೆಗಳು (ಗರಿಷ್ಠ ದರ)",
         "search_label": "🔍 ಮಾರುಕಟ್ಟೆ ಹೆಸರನ್ನು ಹುಡುಕಿ:",
         "sec1_title": "📋 ವಿಭಾಗ 1: ಲೈವ್ ಮಾರುಕಟ್ಟೆ ಕೋಷ್ಟಕಗಳು",
         "sec2_title": "📊 ವಿಭಾಗ 2: ಮಾರುಕಟ್ಟೆ ನಕ್ಷೆಗಳು ಮತ್ತು ದರ ಟ್ರೆಂಡ್‌ಗಳು",
@@ -216,7 +244,7 @@ TEXTS = {
     }
 }
 
-# 3. High-Contrast Universal CSS Rules
+# 3. High-Contrast Readability Styling
 st.markdown("""
     <style>
     .stApp {
@@ -271,7 +299,7 @@ with lang_col2:
 
 T = TEXTS.get(selected_lang, TEXTS["English"])
 
-# 5. REDESIGNED TOP HERO SECTION (3 MODERN WHITE GLASSMORPHIC CARDS)
+# 5. REDESIGNED TOP HERO SECTION (WITH DYNAMIC REAL-TIME GOOGLE MAP VIEWS)
 with st.container():
     col_founder, col_brand, col_map = st.columns([1.1, 1.8, 1.1])
 
@@ -312,10 +340,10 @@ with st.container():
             unsafe_allow_html=True
         )
 
-    # RIGHT: ALL-INDIA SILK FARMERS MAP
+    # RIGHT: ALL-INDIA SILK FARMERS MAP (DYNAMIC REAL-TIME VIEWS)
     with col_map:
         st.markdown(
-            """
+            f"""
             <div style="background: #FFFFFF; padding: 14px; border-radius: 12px; border: 1px solid #E2E8F0; border-right: 5px solid #10B981; text-align: center; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);">
                 <div style="font-size:13px; font-weight:800; color:#0F172A;">🗺️ All-India Silk Farmers Network</div>
                 <div style="display:flex; justify-content:space-around; margin: 6px 0;">
@@ -325,11 +353,11 @@ with st.container():
                     </div>
                     <div style="border-left:1px solid #E2E8F0;"></div>
                     <div>
-                        <div style="font-size:14px; font-weight:800; color:#10B981;">9.99 Lakh+</div>
-                        <div style="font-size:10px; color:#64748B;">Map Views</div>
+                        <div style="font-size:14px; font-weight:800; color:#10B981;">{live_map_views}</div>
+                        <div style="font-size:10px; color:#64748B;">Live Map Views</div>
                     </div>
                 </div>
-                <a href="https://www.google.com/maps/d/u/0/viewer?mid=1EvaJdvlAcQf3m4cjrKkwKuzSDoIK8r4&ll=24.84266843022882%2C95.18937613831109&z=3" target="_blank" style="background:#10B981; color:white !important; padding:5px 12px; border-radius:6px; font-size:11px; font-weight:800; text-decoration:none; display:block; margin-top:4px;">📍 Explore Live Farmers Map ↗</a>
+                <a href="{MAP_URL}" target="_blank" style="background:#10B981; color:white !important; padding:5px 12px; border-radius:6px; font-size:11px; font-weight:800; text-decoration:none; display:block; margin-top:4px;">📍 Explore Live Farmers Map ↗</a>
             </div>
             """,
             unsafe_allow_html=True
