@@ -52,7 +52,7 @@ def get_realtime_map_views():
         return "10 Lakh+ Views"
 
 live_map_views = get_realtime_map_views()
-wa_qr_url = "https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=https://wa.me/919637008151"
+wa_qr_url = "https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=https://wa.me/919637008151"
 
 # 2. Complete Multilingual Translations Dictionary (I18N)
 TEXTS = {
@@ -299,28 +299,38 @@ with lang_col2:
 
 T = TEXTS.get(selected_lang, TEXTS["English"])
 
-# 5. PERFECTLY BALANCED TOP HERO SECTION
+# 5. SYMMETRICAL TOP HERO SECTION (PHOTO + DETAILS + MATCHING WHATSAPP QR)
 with st.container():
-    col_founder, col_brand, col_map = st.columns([1.35, 1.5, 1.15])
+    col_founder, col_brand, col_map = st.columns([1.4, 1.45, 1.15])
 
-    # LEFT: FOUNDER PROFILE CARD (ENLARGED PHOTO & BALANCED ALIGNMENT)
+    # LEFT: FOUNDER PROFILE CARD (SYMMETRICAL PHOTO & LARGE WHATSAPP QR)
     with col_founder:
         st.markdown(
             f"""
-            <div style="background: #FFFFFF; padding: 16px; border-radius: 12px; border: 1px solid #E2E8F0; border-left: 5px solid #2563EB; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); min-height: 125px; display: flex; align-items: center;">
-                <div style="display: flex; align-items: center; gap: 14px; width: 100%;">
-                    <img src="{img_src}" style="height: 105px; width: 85px; border-radius: 8px; object-fit: cover; border: 2px solid #2563EB; flex-shrink: 0; box-shadow: 0 2px 4px rgba(0,0,0,0.08);" alt="Arun B. Magar" />
-                    <div style="display: flex; flex-direction: column; justify-content: center; gap: 2px;">
-                        <h4 style="margin:0; font-size:16px; font-weight:800; color:#0F172A; line-height:1.2;">ARUN B. MAGAR</h4>
+            <div style="background: #FFFFFF; padding: 14px 16px; border-radius: 12px; border: 1px solid #E2E8F0; border-left: 5px solid #2563EB; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); min-height: 125px; display: flex; align-items: center;">
+                <div style="display: flex; align-items: center; justify-content: space-between; width: 100%; gap: 10px;">
+                    
+                    <!-- LEFT PHOTO -->
+                    <img src="{img_src}" style="height: 100px; width: 80px; border-radius: 8px; object-fit: cover; border: 2px solid #2563EB; flex-shrink: 0; box-shadow: 0 2px 4px rgba(0,0,0,0.08);" alt="Arun B. Magar" />
+                    
+                    <!-- CENTER DETAILS -->
+                    <div style="display: flex; flex-direction: column; justify-content: center; gap: 2px; flex: 1;">
+                        <h4 style="margin:0; font-size:15px; font-weight:800; color:#0F172A; line-height:1.2;">ARUN B. MAGAR</h4>
                         <div>
                             <span style="background:#EFF6FF; color:#1D4ED8; font-size:10px; font-weight:700; padding:2px 6px; border-radius:10px; display:inline-block; border:1px solid #BFDBFE;">Rtd. DySP, Maharashtra Police</span>
                         </div>
                         <div style="font-size:11px; font-weight:700; color:#475569; margin-top:2px;">Founder, Silk Creators</div>
-                        <div style="display:flex; align-items:center; gap:6px; margin-top:4px;">
+                        <div style="margin-top:3px;">
                             <a href="https://wa.me/919637008151" target="_blank" style="color:#10B981; font-weight:800; font-size:12px; text-decoration:none;">💬 +91 9637008151</a>
-                            <img src="{wa_qr_url}" style="width:26px; height:26px; border-radius:4px; border:1px solid #CBD5E1;" alt="QR" title="Scan WhatsApp QR" />
                         </div>
                     </div>
+
+                    <!-- RIGHT LARGE WHATSAPP QR CODE -->
+                    <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; flex-shrink: 0; background: #F0FDF4; padding: 5px 7px; border-radius: 8px; border: 1.5px solid #10B981;">
+                        <img src="{wa_qr_url}" style="width: 72px; height: 72px; border-radius: 5px; border: 1px solid #A7F3D0;" alt="WhatsApp QR" />
+                        <span style="font-size: 8px; font-weight: 800; color: #047857; margin-top: 3px; text-transform: uppercase; text-align: center;">Scan WhatsApp</span>
+                    </div>
+
                 </div>
             </div>
             """,
@@ -331,12 +341,12 @@ with st.container():
     with col_brand:
         st.markdown(
             f"""
-            <div style="background: #FFFFFF; padding: 16px; border-radius: 12px; border: 1px solid #E2E8F0; border-top: 5px solid #2563EB; text-align: center; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); min-height: 125px; display: flex; flex-direction: column; justify-content: center;">
+            <div style="background: #FFFFFF; padding: 14px; border-radius: 12px; border: 1px solid #E2E8F0; border-top: 5px solid #2563EB; text-align: center; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); min-height: 125px; display: flex; flex-direction: column; justify-content: center;">
                 <div style="display: inline-block; background: #DCFCE7; color: #15803D; font-size: 11px; font-weight: 800; padding: 2px 10px; border-radius: 20px; margin-bottom: 4px; align-self: center;">
                     🟢 LIVE MARKET RATES
                 </div>
-                <h2 style="margin:0; font-size: 22px; font-weight: 900; color: #0F172A;">{T['app_title']}</h2>
-                <div style="font-size: 13px; color: #D97706; font-style: italic; font-weight: 700; margin: 2px 0;">"{T['app_motto']}"</div>
+                <h2 style="margin:0; font-size: 21px; font-weight: 900; color: #0F172A;">{T['app_title']}</h2>
+                <div style="font-size: 12px; color: #D97706; font-style: italic; font-weight: 700; margin: 2px 0;">"{T['app_motto']}"</div>
                 <p style="margin:0; font-size: 11px; color: #64748B; font-weight: 600;">{T['app_subtitle']}</p>
             </div>
             """,
@@ -347,7 +357,7 @@ with st.container():
     with col_map:
         st.markdown(
             f"""
-            <div style="background: #FFFFFF; padding: 16px; border-radius: 12px; border: 1px solid #E2E8F0; border-right: 5px solid #10B981; text-align: center; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); min-height: 125px; display: flex; flex-direction: column; justify-content: center;">
+            <div style="background: #FFFFFF; padding: 14px; border-radius: 12px; border: 1px solid #E2E8F0; border-right: 5px solid #10B981; text-align: center; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); min-height: 125px; display: flex; flex-direction: column; justify-content: center;">
                 <div style="font-size:13px; font-weight:800; color:#0F172A;">🗺️ All-India Silk Farmers Network</div>
                 <div style="display:flex; justify-content:space-around; margin: 6px 0;">
                     <div>
