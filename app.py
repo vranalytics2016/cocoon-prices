@@ -54,7 +54,7 @@ def get_realtime_map_views():
 live_map_views = get_realtime_map_views()
 wa_qr_url = "https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=https://wa.me/919637008151"
 
-# 2. Multilingual Translations Dictionary (I18N)
+# 2. Complete Multilingual Translations Dictionary (I18N)
 TEXTS = {
     "English": {
         "app_title": "🌾 Silk Creators - Live Cocoon Rates",
@@ -64,6 +64,7 @@ TEXTS = {
         "refresh_btn": "🔄 Refresh Data",
         "share_wa": "📲 Share WhatsApp",
         "sec1_title": "📋 LIVE MARKET RATE",
+        "select_mandi_label": "🏬 Select Mandi / Market:",
         "top_mandis_title": "🏆 Top Highest Paying Mandis Today",
         "top_bv": "⚪ Top 3 BV Markets (Highest Rates)",
         "top_cb": "🟡 Top 3 CB Markets (Highest Rates)",
@@ -75,7 +76,7 @@ TEXTS = {
         "bar_title": "📊 Market Rate Comparison (🔴 Min | 🟢 Max | 🟡 Avg)",
         "line_title": "📈 Day-wise Price Trajectory Trend",
         "line_mandi_select": "🎯 Select Market for Day-wise Price Trajectory:",
-        "search_label": "🔍 Search Mandi / Market Name:",
+        "search_label": "🔍 Search Mandi Name:",
         "bv_header": "⚪ Bi-Voltine (BV) – ದ್ವಿತಳಿ",
         "cb_header": "🟡 Cross-Breed (CB) – ಮಿಶ್ರತಳಿ",
         "lowest": "Lowest Rate",
@@ -95,6 +96,7 @@ TEXTS = {
         "refresh_btn": "🔄 ನವೀಕರಿಸಿ (Refresh)",
         "share_wa": "📲 WhatsApp ನಲ್ಲಿ ಹಂಚಿಕೊಳ್ಳಿ",
         "sec1_title": "📋 ಲೈವ್ ಮಾರುಕಟ್ಟೆ ದರ (LIVE MARKET RATE)",
+        "select_mandi_label": "🏬 ಮಾರುಕಟ್ಟೆ ಆಯ್ಕೆಮಾಡಿ (Select Mandi):",
         "top_mandis_title": "🏆 ಇಂದಿನ ಗರಿಷ್ಠ ದರ ನೀಡುವ ಮಾರುಕಟ್ಟೆಗಳು",
         "top_bv": "⚪ ಟಾಪ್ 3 BV ಮಾರುಕಟ್ಟೆಗಳು (ಗರಿಷ್ಠ ದರ)",
         "top_cb": "🟡 ಟಾಪ್ 3 CB ಮಾರುಕಟ್ಟೆಗಳು (ಗರಿಷ್ಠ ದರ)",
@@ -126,6 +128,7 @@ TEXTS = {
         "refresh_btn": "🔄 ताज़ा करें (Refresh)",
         "share_wa": "📲 WhatsApp पर शेयर करें",
         "sec1_title": "📋 लाइव बाज़ार दर (LIVE MARKET RATE)",
+        "select_mandi_label": "🏬 मंडी चुनें (Select Mandi):",
         "top_mandis_title": "🏆 आज की उच्चतम रेट वाली मंडियां",
         "top_bv": "⚪ टॉप 3 BV मंडियां (उच्चतम रेट)",
         "top_cb": "🟡 टॉप 3 CB मंडियां (उच्चतम रेट)",
@@ -157,6 +160,7 @@ TEXTS = {
         "refresh_btn": "🔄 రిఫ్రెష్ (Refresh)",
         "share_wa": "📲 WhatsApp లో షేర్ చేయండి",
         "sec1_title": "📋 లైవ్ మార్కెట్ రేటు (LIVE MARKET RATE)",
+        "select_mandi_label": "🏬 మార్కెట్ ఎంచుకోండి (Select Mandi):",
         "top_mandis_title": "🏆 నేటి అత్యధిక ధర కలిగిన మార్కెట్లు",
         "top_bv": "⚪ టాప్ 3 BV మార్కెట్లు (అత్యధిక ధర)",
         "top_cb": "🟡 టాప్ 3 CB మార్కెట్లు (అత్యధిక ధర)",
@@ -188,6 +192,7 @@ TEXTS = {
         "refresh_btn": "🔄 ताजे करा (Refresh)",
         "share_wa": "📲 WhatsApp वर शेअर करा",
         "sec1_title": "📋 थेट बाजारभाव (LIVE MARKET RATE)",
+        "select_mandi_label": "🏬 बाजार समिती निवडा (Select Mandi):",
         "top_mandis_title": "🏆 आजचे सर्वाधिक भाव देणारे बाजार",
         "top_bv": "⚪ टॉप 3 BV बाजार (सर्वाधिक भाव)",
         "top_cb": "🟡 टॉप 3 CB बाजार (सर्वाधिक भाव)",
@@ -219,6 +224,7 @@ TEXTS = {
         "refresh_btn": "🔄 புதுப்பி (Refresh)",
         "share_wa": "📲 WhatsApp இல் பகிரவும்",
         "sec1_title": "📋 நேரலை சந்தை விலை (LIVE MARKET RATE)",
+        "select_mandi_label": "🏬 சந்தையைத் தேர்ந்தெடுக்கவும் (Select Mandi):",
         "top_mandis_title": "🏆 இன்றைய அதிகபட்ச விலை சந்தைகள்",
         "top_bv": "⚪ டாப் 3 BV சந்தைகள் (அதிகபட்ச விலை)",
         "top_cb": "🟡 டாப் 3 CB சந்தைகள் (அதிகபட்ச விலை)",
@@ -421,15 +427,27 @@ try:
         """, unsafe_allow_html=True)
 
     # =========================================================================
-    # FLOW ITEM 1: LIVE MARKET RATE (SIDE-BY-SIDE TABLES)
+    # FLOW ITEM 1: LIVE MARKET RATE (WITH MANDI SELECTOR & SEARCH)
     # =========================================================================
     st.markdown(f"<div class='section-title'>{T['sec1_title']}</div>", unsafe_allow_html=True)
 
-    # Instant Search Filter inside Live Market Rate
-    search_mandi = st.text_input(T['search_label'], "").strip()
+    # MANDI SELECTOR DROPDOWN (DEFAULT = "All Mandis")
+    all_mandis_list = sorted([str(m) for m in date_df['Market Name'].dropna().unique() if str(m).strip() != ''])
+    mandi_options = ["All Mandis"] + all_mandis_list
+
+    mandi_col1, mandi_col2 = st.columns([2, 2])
+    with mandi_col1:
+        selected_mandi_tbl = st.selectbox(T['select_mandi_label'], mandi_options, index=0)
+    with mandi_col2:
+        search_mandi = st.text_input(T['search_label'], "").strip()
 
     df_bv = df_bv_base.copy()
     df_cb = df_cb_base.copy()
+
+    # Filter tables by Mandi Selection or Text Search
+    if selected_mandi_tbl != "All Mandis":
+        df_bv = df_bv[df_bv['Market Name'] == selected_mandi_tbl]
+        df_cb = df_cb[df_cb['Market Name'] == selected_mandi_tbl]
 
     if search_mandi:
         df_bv = df_bv[df_bv['Market Name'].str.contains(search_mandi, case=False, na=False)]
@@ -455,7 +473,7 @@ try:
                 height=350
             )
         else:
-            st.info("No BV entries found.")
+            st.info("No BV entries found for this Mandi.")
 
     # RIGHT: CB TABLE
     with col_tbl_cb:
@@ -473,7 +491,7 @@ try:
                 height=350
             )
         else:
-            st.info("No CB entries found.")
+            st.info("No CB entries found for this Mandi.")
 
     # CSV DOWNLOAD
     st.write("")
@@ -588,16 +606,16 @@ try:
     col_bar_bv, col_bar_cb = st.columns(2)
 
     with col_bar_bv:
-        if not df_bv.empty:
-            melted_bv = pd.melt(df_bv, id_vars=['Market Name'], value_vars=['Min', 'Max', 'Avg'], var_name='Rate_Type', value_name='Price').dropna(subset=['Price'])
+        if not df_bv_base.empty:
+            melted_bv = pd.melt(df_bv_base, id_vars=['Market Name'], value_vars=['Min', 'Max', 'Avg'], var_name='Rate_Type', value_name='Price').dropna(subset=['Price'])
             fig_bv = px.bar(melted_bv, x='Market Name', y='Price', color='Rate_Type', barmode='group', text_auto='.0f', title=f"⚪ BV: {selected_date}", labels={'Market Name': 'Mandi', 'Price': 'Rate (₹/kg)'}, color_discrete_map=color_map)
             fig_bv.update_traces(textposition='outside')
             fig_bv.update_layout(xaxis_title="Mandi", yaxis_title="Rate (₹/kg)", legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1), height=420, margin=dict(l=10, r=10, t=50, b=10))
             st.plotly_chart(fig_bv, use_container_width=True)
 
     with col_bar_cb:
-        if not df_cb.empty:
-            melted_cb = pd.melt(df_cb, id_vars=['Market Name'], value_vars=['Min', 'Max', 'Avg'], var_name='Rate_Type', value_name='Price').dropna(subset=['Price'])
+        if not df_cb_base.empty:
+            melted_cb = pd.melt(df_cb_base, id_vars=['Market Name'], value_vars=['Min', 'Max', 'Avg'], var_name='Rate_Type', value_name='Price').dropna(subset=['Price'])
             fig_cb = px.bar(melted_cb, x='Market Name', y='Price', color='Rate_Type', barmode='group', text_auto='.0f', title=f"🟡 CB: {selected_date}", labels={'Market Name': 'Mandi', 'Price': 'Rate (₹/kg)'}, color_discrete_map=color_map)
             fig_cb.update_traces(textposition='outside')
             fig_cb.update_layout(xaxis_title="Mandi", yaxis_title="Rate (₹/kg)", legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1), height=420, margin=dict(l=10, r=10, t=50, b=10))
