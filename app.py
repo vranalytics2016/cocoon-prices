@@ -15,7 +15,7 @@ st.set_page_config(
     initial_sidebar_state="collapsed"
 )
 
-# Function to get sharp avatar image in ORIGINAL rectangular shape
+# Function to get sharp image in ORIGINAL rectangular shape
 def get_profile_image():
     for fname in ["arun_magar.jpg", "arun_magar.png", "arun_magar.jpeg"]:
         if os.path.exists(fname):
@@ -39,7 +39,6 @@ def get_realtime_map_views():
         )
         html = urllib.request.urlopen(req, timeout=5).read().decode('utf-8', errors='ignore')
         
-        # Match patterns like "999,620 views" or JSON view count variables
         match = re.search(r'([0-9,]+)\s*views', html, re.IGNORECASE)
         if not match:
             match = re.search(r'"views"\s*:\s*"?([0-9,]+)"?', html, re.IGNORECASE)
@@ -53,6 +52,7 @@ def get_realtime_map_views():
         return "10 Lakh+ Views"
 
 live_map_views = get_realtime_map_views()
+wa_qr_url = "https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=https://wa.me/919637008151"
 
 # 2. Complete Multilingual Translations Dictionary (I18N)
 TEXTS = {
@@ -100,7 +100,7 @@ TEXTS = {
         "calc_info": "{date} ರ ದರಗಳ ಆಧಾರದ ಮೇಲೆ {qty} Kg ಗೂಡಿಗೆ ನಿರೀಕ್ಷಿತ ಆದಾಯದ ಹೋಲಿಕೆ.",
         "top_mandis_title": "🏆 ಇಂದಿನ ಗರಿಷ್ಠ ದರ ನೀಡುವ ಮಾರುಕಟ್ಟೆಗಳು",
         "top_bv": "⚪ ಟಾಪ್ 3 BV ಮಾರುಕಟ್ಟೆಗಳು (ಗರಿಷ್ಠ ದರ)",
-        "top_cb": "⚪ ಟಾಪ್ 3 CB ಮಾರುಕಟ್ಟೆಗಳು (ಗರಿಷ್ಠ ದರ)",
+        "top_cb": "🟡 ಟಾಪ್ 3 CB ಮಾರುಕಟ್ಟೆಗಳು (ಗರಿಷ್ಠ ದರ)",
         "search_label": "🔍 ಮಾರುಕಟ್ಟೆ ಹೆಸರನ್ನು ಹುಡುಕಿ:",
         "sec1_title": "📋 ವಿಭಾಗ 1: ಲೈವ್ ಮಾರುಕಟ್ಟೆ ಕೋಷ್ಟಕಗಳು",
         "sec2_title": "📊 ವಿಭಾಗ 2: ಮಾರುಕಟ್ಟೆ ನಕ್ಷೆಗಳು ಮತ್ತು ದರ ಟ್ರೆಂಡ್‌ಗಳು",
@@ -299,23 +299,26 @@ with lang_col2:
 
 T = TEXTS.get(selected_lang, TEXTS["English"])
 
-# 5. REDESIGNED TOP HERO SECTION (WITH DYNAMIC REAL-TIME GOOGLE MAP VIEWS)
+# 5. PERFECTLY BALANCED TOP HERO SECTION
 with st.container():
-    col_founder, col_brand, col_map = st.columns([1.1, 1.8, 1.1])
+    col_founder, col_brand, col_map = st.columns([1.35, 1.5, 1.15])
 
-    # LEFT: FOUNDER PROFILE CARD
+    # LEFT: FOUNDER PROFILE CARD (ENLARGED PHOTO & BALANCED ALIGNMENT)
     with col_founder:
         st.markdown(
             f"""
-            <div style="background: #FFFFFF; padding: 14px; border-radius: 12px; border: 1px solid #E2E8F0; border-left: 5px solid #2563EB; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);">
-                <div style="display: flex; align-items: center; gap: 12px;">
-                    <img src="{img_src}" style="height: 75px; width: auto; max-width: 85px; border-radius: 8px; object-fit: contain; border: 2px solid #2563EB; flex-shrink: 0;" alt="Arun B. Magar" />
-                    <div>
-                        <h4 style="margin:0; font-size:15px; font-weight:800; color:#0F172A;">ARUN B. MAGAR</h4>
-                        <span style="background:#EFF6FF; color:#1D4ED8; font-size:10px; font-weight:700; padding:2px 6px; border-radius:10px; display:inline-block; margin-top:2px;">Rtd. DySP, Maharashtra Police</span>
-                        <div style="font-size:11px; font-weight:700; color:#475569; margin-top:1px;">Founder, Silk Creators</div>
-                        <div style="margin-top:3px;">
+            <div style="background: #FFFFFF; padding: 16px; border-radius: 12px; border: 1px solid #E2E8F0; border-left: 5px solid #2563EB; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); min-height: 125px; display: flex; align-items: center;">
+                <div style="display: flex; align-items: center; gap: 14px; width: 100%;">
+                    <img src="{img_src}" style="height: 105px; width: 85px; border-radius: 8px; object-fit: cover; border: 2px solid #2563EB; flex-shrink: 0; box-shadow: 0 2px 4px rgba(0,0,0,0.08);" alt="Arun B. Magar" />
+                    <div style="display: flex; flex-direction: column; justify-content: center; gap: 2px;">
+                        <h4 style="margin:0; font-size:16px; font-weight:800; color:#0F172A; line-height:1.2;">ARUN B. MAGAR</h4>
+                        <div>
+                            <span style="background:#EFF6FF; color:#1D4ED8; font-size:10px; font-weight:700; padding:2px 6px; border-radius:10px; display:inline-block; border:1px solid #BFDBFE;">Rtd. DySP, Maharashtra Police</span>
+                        </div>
+                        <div style="font-size:11px; font-weight:700; color:#475569; margin-top:2px;">Founder, Silk Creators</div>
+                        <div style="display:flex; align-items:center; gap:6px; margin-top:4px;">
                             <a href="https://wa.me/919637008151" target="_blank" style="color:#10B981; font-weight:800; font-size:12px; text-decoration:none;">💬 +91 9637008151</a>
+                            <img src="{wa_qr_url}" style="width:26px; height:26px; border-radius:4px; border:1px solid #CBD5E1;" alt="QR" title="Scan WhatsApp QR" />
                         </div>
                     </div>
                 </div>
@@ -328,8 +331,8 @@ with st.container():
     with col_brand:
         st.markdown(
             f"""
-            <div style="background: #FFFFFF; padding: 14px; border-radius: 12px; border: 1px solid #E2E8F0; border-top: 5px solid #2563EB; text-align: center; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);">
-                <div style="display: inline-block; background: #DCFCE7; color: #15803D; font-size: 11px; font-weight: 800; padding: 2px 10px; border-radius: 20px; margin-bottom: 4px;">
+            <div style="background: #FFFFFF; padding: 16px; border-radius: 12px; border: 1px solid #E2E8F0; border-top: 5px solid #2563EB; text-align: center; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); min-height: 125px; display: flex; flex-direction: column; justify-content: center;">
+                <div style="display: inline-block; background: #DCFCE7; color: #15803D; font-size: 11px; font-weight: 800; padding: 2px 10px; border-radius: 20px; margin-bottom: 4px; align-self: center;">
                     🟢 LIVE MARKET RATES
                 </div>
                 <h2 style="margin:0; font-size: 22px; font-weight: 900; color: #0F172A;">{T['app_title']}</h2>
@@ -340,11 +343,11 @@ with st.container():
             unsafe_allow_html=True
         )
 
-    # RIGHT: ALL-INDIA SILK FARMERS MAP (DYNAMIC REAL-TIME VIEWS)
+    # RIGHT: ALL-INDIA SILK FARMERS MAP
     with col_map:
         st.markdown(
             f"""
-            <div style="background: #FFFFFF; padding: 14px; border-radius: 12px; border: 1px solid #E2E8F0; border-right: 5px solid #10B981; text-align: center; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);">
+            <div style="background: #FFFFFF; padding: 16px; border-radius: 12px; border: 1px solid #E2E8F0; border-right: 5px solid #10B981; text-align: center; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); min-height: 125px; display: flex; flex-direction: column; justify-content: center;">
                 <div style="font-size:13px; font-weight:800; color:#0F172A;">🗺️ All-India Silk Farmers Network</div>
                 <div style="display:flex; justify-content:space-around; margin: 6px 0;">
                     <div>
@@ -357,7 +360,7 @@ with st.container():
                         <div style="font-size:10px; color:#64748B;">Live Map Views</div>
                     </div>
                 </div>
-                <a href="{MAP_URL}" target="_blank" style="background:#10B981; color:white !important; padding:5px 12px; border-radius:6px; font-size:11px; font-weight:800; text-decoration:none; display:block; margin-top:4px;">📍 Explore Live Farmers Map ↗</a>
+                <a href="{MAP_URL}" target="_blank" style="background:#10B981; color:white !important; padding:5px 12px; border-radius:6px; font-size:11px; font-weight:800; text-decoration:none; display:block; margin-top:2px;">📍 Explore Live Farmers Map ↗</a>
             </div>
             """,
             unsafe_allow_html=True
