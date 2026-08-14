@@ -11,7 +11,185 @@ st.set_page_config(
     initial_sidebar_state="collapsed"
 )
 
-# 2. Modern UI CSS Styling
+# 2. Multilingual Translations Dictionary (I18N)
+TEXTS = {
+    "English": {
+        "app_title": "🌾 Silk Creators - Live Cocoon Rates",
+        "app_subtitle": "Dedicated to Farmers Service | Live Cocoon Market Rates across India",
+        "select_date": "📅 Select Date:",
+        "refresh_btn": "🔄 Refresh Data",
+        "share_wa": "📲 Share WhatsApp",
+        "calc_title": "🧮 Farmer Revenue Estimator (Compare Income Across All Mandis)",
+        "calc_sub": "💰 Compare Your Expected Income Across All Mandis",
+        "harvest_qty": "Enter your Harvest Weight (in Kg):",
+        "calc_info": "Showing total payout comparisons for {qty} Kg of cocoons on {date}.",
+        "top_mandis_title": "🏆 Top Highest Paying Mandis Today",
+        "top_bv": "⚪ Top 3 BV Markets (Highest Rates)",
+        "top_cb": "🟡 Top 3 CB Markets (Highest Rates)",
+        "search_label": "🔍 Search Mandi / Market Name:",
+        "sec1_title": "📋 SECTION 1: LIVE MARKET TABLES (SIDE-BY-SIDE)",
+        "sec2_title": "📊 SECTION 2: MARKET VISUALIZATIONS & PRICE TRENDS",
+        "bv_header": "⚪ Bi-Voltine (BV) – ದ್ವಿತಳಿ",
+        "cb_header": "🟡 Cross-Breed (CB) – ಮಿಶ್ರತಳಿ",
+        "lowest": "Lowest",
+        "highest": "Highest",
+        "avg": "Average",
+        "download_btn": "📥 Download Today's Rates Report (CSV / Excel)",
+        "bar_title": "📊 Market Rate Comparison (🔴 Min | 🟢 Max | 🟡 Avg)",
+        "line_title": "📈 Day-wise Price Trajectory Trend",
+        "line_mandi_select": "🎯 Select Market for Day-wise Price Trajectory:",
+        "exp_inc": "Expected Income (Avg)",
+        "max_inc": "Max Potential Income",
+        "avg_rate": "Avg Rate"
+    },
+    "Kannada (ಕನ್ನಡ)": {
+        "app_title": "🌾 ಸಿಲ್ಕ್ ಕ್ರಿಯೇಟರ್ಸ್ - ರೇಷ್ಮೆ ಮಾರುಕಟ್ಟೆ ಬೆಲೆಗಳು",
+        "app_subtitle": "ರೈತರ ಸೇವೆಗೆ ಮೀಸಲಾಗಿದೆ | ಭಾರತದಾದ್ಯಂತ ಲೈವ್ ರೇಷ್ಮೆ ಮಾರುಕಟ್ಟೆ ದರಗಳು",
+        "select_date": "📅 ದಿನಾಂಕವನ್ನು ಆಯ್ಕೆಮಾಡಿ:",
+        "refresh_btn": "🔄 ನವೀಕರಿಸಿ (Refresh)",
+        "share_wa": "📲 WhatsApp ನಲ್ಲಿ ಹಂಚಿಕೊಳ್ಳಿ",
+        "calc_title": "🧮 ರೈತರ ಆದಾಯ ಲೆಕ್ಕಾಚಾರ (ಎಲ್ಲಾ ಮಾರುಕಟ್ಟೆಗಳ ಹೋಲಿಕೆ)",
+        "calc_sub": "💰 ನಿಮ್ಮ ಒಟ್ಟು ನಿರೀಕ್ಷಿತ ಆದಾಯವನ್ನು ಎಲ್ಲಾ ಮಾರುಕಟ್ಟೆಗಳಲ್ಲಿ ಹೋಲಿಸಿ",
+        "harvest_qty": "ನಿಮ್ಮ ರೇಷ್ಮೆ ಗೂಡಿನ ತೂಕವನ್ನು ನಮೂದಿಸಿ (Kg):",
+        "calc_info": "{date} ರ ದರಗಳ ಆಧಾರದ ಮೇಲೆ {qty} Kg ಗೂಡಿಗೆ ನಿರೀಕ್ಷಿತ ಆದಾಯದ ಹೋಲಿಕೆ.",
+        "top_mandis_title": "🏆 ಇಂದಿನ ಗರಿಷ್ಠ ದರ ನೀಡುವ ಮಾರುಕಟ್ಟೆಗಳು",
+        "top_bv": "⚪ ಟಾಪ್ 3 BV ಮಾರುಕಟ್ಟೆಗಳು (ಗರಿಷ್ಠ ದರ)",
+        "top_cb": "🟡 ಟಾಪ್ 3 CB ಮಾರುಕಟ್ಟೆಗಳು (ಗರಿಷ್ಠ ದರ)",
+        "search_label": "🔍 ಮಾರುಕಟ್ಟೆ ಹೆಸರನ್ನು ಹುಡುಕಿ:",
+        "sec1_title": "📋 ವಿಭಾಗ 1: ಲೈವ್ ಮಾರುಕಟ್ಟೆ ಕೋಷ್ಟಕಗಳು",
+        "sec2_title": "📊 ವಿಭಾಗ 2: ಮಾರುಕಟ್ಟೆ ನಕ್ಷೆಗಳು ಮತ್ತು ದರ ಟ್ರೆಂಡ್‌ಗಳು",
+        "bv_header": "⚪ ಬೈವೋಲ್ಟೈನ್ (BV) – ದ್ವಿತಳಿ",
+        "cb_header": "🟡 ಕ್ರಾಸ್-ಬ್ರೀಡ್ (CB) – ಮಿಶ್ರತಳಿ",
+        "lowest": "ಕನಿಷ್ಠ ದರ",
+        "highest": "ಗರಿಷ್ಠ ದರ",
+        "avg": "ಸರಾಸರಿ ದರ",
+        "download_btn": "📥 ಇಂದಿನ ದರ ವರದಿಯನ್ನು ಡೌನ್‌ಲೋಡ್ ಮಾಡಿ (CSV/Excel)",
+        "bar_title": "📊 ಮಾರುಕಟ್ಟೆ ದರಗಳ ಹೋಲಿಕೆ (🔴 ಕನಿಷ್ಠ | 🟢 ಗರಿಷ್ಠ | 🟡 ಸರಾಸರಿ)",
+        "line_title": "📈 ದಿನನಿತ್ಯದ ದರ ಬದಲಾವಣೆ ಟ್ರೆಂಡ್",
+        "line_mandi_select": "🎯 ದರ ಟ್ರೆಂಡ್ ನೋಡಲು ಮಾರುಕಟ್ಟೆಯನ್ನು ಆಯ್ಕೆಮಾಡಿ:",
+        "exp_inc": "ನಿರೀಕ್ಷಿತ ಆದಾಯ (ಸರಾಸರಿ)",
+        "max_inc": "ಗರಿಷ್ಠ ಸಾಮರ್ಥ್ಯದ ಆದಾಯ",
+        "avg_rate": "ಸರಾಸರಿ ದರ"
+    },
+    "Hindi (हिंदी)": {
+        "app_title": "🌾 सिल्क क्रिएटर्स - लाइव रेशम बाज़ार भाव",
+        "app_subtitle": "किसानों की सेवा में समर्पित | भारतभर के रेशम बाज़ार रेट",
+        "select_date": "📅 तिथि चुनें:",
+        "refresh_btn": "🔄 ताज़ा करें (Refresh)",
+        "share_wa": "📲 WhatsApp पर शेयर करें",
+        "calc_title": "🧮 किसान आय कैलकुलेटर (सभी मंडियों की तुलना करें)",
+        "calc_sub": "💰 सभी मंडियों में अपनी अनुमानित आय की तुलना करें",
+        "harvest_qty": "अपनी रेशम उपज का वजन दर्ज करें (Kg में):",
+        "calc_info": "{date} की दरों के आधार पर {qty} Kg उपज के लिए अनुमानित आय तुलना।",
+        "top_mandis_title": "🏆 आज की उच्चतम रेट वाली मंडियां",
+        "top_bv": "⚪ टॉप 3 BV मंडियां (उच्चतम रेट)",
+        "top_cb": "🟡 टॉप 3 CB मंडियां (उच्चतम रेट)",
+        "search_label": "🔍 मंडी का नाम खोजें:",
+        "sec1_title": "📋 अनुभाग 1: लाइव बाज़ार तालिकाएं (आमने-सामने)",
+        "sec2_title": "📊 अनुभाग 2: बाज़ार चार्ट और मूल्य रुझान",
+        "bv_header": "⚪ बाई-वोल्टाइन (BV) रेशम",
+        "cb_header": "🟡 क्रॉस-ब्रीड (CB) रेशम",
+        "lowest": "न्यूनतम दर",
+        "highest": "अधिकतम दर",
+        "avg": "औसत दर",
+        "download_btn": "📥 आज की रिपोर्ट डाउनलोड करें (CSV/Excel)",
+        "bar_title": "📊 मंडी रेट तुलना (🔴 न्यूनतम | 🟢 अधिकतम | 🟡 औसत)",
+        "line_title": "📈 दैनिक मूल्य रुझान ट्रेंड",
+        "line_mandi_select": "🎯 मूल्य रुझान देखने के लिए मंडी चुनें:",
+        "exp_inc": "अनुमानित आय (औसत)",
+        "max_inc": "अधिकतम संभावित आय",
+        "avg_rate": "औसत दर"
+    },
+    "Telugu (తెలుగు)": {
+        "app_title": "🌾 సిల్క్ క్రియేటర్స్ - లైవ్ పట్టు కాయల ధరలు",
+        "app_subtitle": "రైతుల సేవలో | భారతదేశమంతటా లైవ్ మార్కెట్ ధరలు",
+        "select_date": "📅 తేదీని ఎంచుకోండి:",
+        "refresh_btn": "🔄 రిఫ్రెష్ (Refresh)",
+        "share_wa": "📲 WhatsApp లో షేర్ చేయండి",
+        "calc_title": "🧮 రైతు ఆదాయ అంచనా (అన్ని మార్కెట్ల పోలిక)",
+        "calc_sub": "💰 అన్ని మార్కెట్లలో మీ అంచనా ఆదాయాన్ని పోల్చండి",
+        "harvest_qty": "మీ పట్టు దిగుబడి బరువును ఎంటర్ చేయండి (Kg లలో):",
+        "calc_info": "{date} ధరల ఆధారంగా {qty} Kg దిగుబడికి అంచనా ఆదాయం.",
+        "top_mandis_title": "🏆 నేటి అత్యధిక ధర కలిగిన మార్కెట్లు",
+        "top_bv": "⚪ టాప్ 3 BV మార్కెట్లు (అత్యధిక ధర)",
+        "top_cb": "🟡 టాప్ 3 CB మార్కెట్లు (అత్యధిక ధర)",
+        "search_label": "🔍 మార్కెట్ పేరును శోధించండి:",
+        "sec1_title": "📋 విభాగం 1: లైవ్ మార్కెట్ పట్టికలు",
+        "sec2_title": "📊 విభాగం 2: మార్కెట్ విశ్లేషణ మరియు ధరల ధోరణులు",
+        "bv_header": "⚪ బై-వోల్టైన్ (BV) రకం",
+        "cb_header": "🟡 క్రాస్-బ్రీడ్ (CB) రకం",
+        "lowest": "కనీస ధర",
+        "highest": "గరిష్ట ధర",
+        "avg": "సగటు ధర",
+        "download_btn": "📥 నేటి నివేదికను డౌన్‌లోడ్ చేయండి (CSV/Excel)",
+        "bar_title": "📊 మార్కెట్ ధరల పోలిక (🔴 కనీస | 🟢 గరిష్ట | 🟡 సగటు)",
+        "line_title": "📈 రోజువారీ ధరల మార్పు ట్రెండ్",
+        "line_mandi_select": "🎯 ట్రెండ్ చూడటానికి మార్కెట్‌ను ఎంచుకోండి:",
+        "exp_inc": "అంచనా ఆదాయం (సగటు)",
+        "max_inc": "గరిష్ట సంభావ్య ఆదాయం",
+        "avg_rate": "సగటు ధర"
+    },
+    "Marathi (मराठी)": {
+        "app_title": "🌾 सिल्क क्रिएटर्स - लाईव्ह रेशीम कोष बाजारभाव",
+        "app_subtitle": "शेतकऱ्यांच्या सेवेसाठी | भारतातील थेट बाजारभाव",
+        "select_date": "📅 दिनांक निवडा:",
+        "refresh_btn": "🔄 ताजे करा (Refresh)",
+        "share_wa": "📲 WhatsApp वर शेअर करा",
+        "calc_title": "🧮 शेतकरी उत्पन्न कॅल्क्युलेटर (सर्व बाजार समिती तुलना)",
+        "calc_sub": "💰 सर्व बाजारांमधील तुमचे अंदाजे उत्पन्न तपासा",
+        "harvest_qty": "तुमचे एकूण उत्पन्न वजन प्रविष्ट करा (Kg मध्ये):",
+        "calc_info": "{date} च्या दरांनुसार {qty} Kg उत्पन्नाची तुलना.",
+        "top_mandis_title": "🏆 आजचे सर्वाधिक भाव देणारे बाजार",
+        "top_bv": "⚪ टॉप 3 BV बाजार (सर्वाधिक भाव)",
+        "top_cb": "🟡 टॉप 3 CB बाजार (सर्वाधिक भाव)",
+        "search_label": "🔍 बाजार समिती नाव शोधा:",
+        "sec1_title": "📋 विभाग १: लाईव्ह बाजारभाव तक्ता",
+        "sec2_title": "📊 विभाग २: बाजारभाव चार्ट आणि ट्रेंड्स",
+        "bv_header": "⚪ बाय-व्होल्टाईन (BV) रेशीम",
+        "cb_header": "🟡 क्रॉस-ब्रीड (CB) रेशीम",
+        "lowest": "किमान भाव",
+        "highest": "कमाल भाव",
+        "avg": "सरासरी भाव",
+        "download_btn": "📥 आजचा अहवाल डाउनलोड करा (CSV/Excel)",
+        "bar_title": "📊 बाजार समिती दर तुलना (🔴 किमान | 🟢 कमाल | 🟡 सरासरी)",
+        "line_title": "📈 दैनिक दर बदल ट्रेंड",
+        "line_mandi_select": "🎯 दर बदल पाहण्यासाठी बाजार समिती निवडा:",
+        "exp_inc": "अंदाजे उत्पन्न (सरासरी)",
+        "max_inc": "कमाल संभाव्य उत्पन्न",
+        "avg_rate": "सरासरी भाव"
+    },
+    "Tamil (தமிழ்)": {
+        "app_title": "🌾 சில்க் கிரியேட்டர்ஸ் - நேரலை பட்டுக்கூடு சந்தை விலை",
+        "app_subtitle": "விவசாயிகளின் சேவையில் | இந்தியா முழுவதுமான நேரலை விலை",
+        "select_date": "📅 தேதியைத் தேர்ந்தெடுக்கவும்:",
+        "refresh_btn": "🔄 புதுப்பி (Refresh)",
+        "share_wa": "📲 WhatsApp இல் பகிரவும்",
+        "calc_title": "🧮 விவசாயி வருமானக் கணக்கீடு (அனைத்து சந்தைகள் ஒப்பீடு)",
+        "calc_sub": "💰 அனைத்து சந்தைகளிலும் உங்கள் எதிர்பார்க்கப்படும் வருமானத்தை ஒப்பிடுங்கள்",
+        "harvest_qty": "உங்கள் மகசூல் எடையை உள்ளிடவும் (Kg):",
+        "calc_info": "{date} தேதியின் விலைகளின் அடிப்படையில் {qty} Kg மகசூலுக்கான வருமான ஒப்பீடு.",
+        "top_mandis_title": "🏆 இன்றைய அதிகபட்ச விலை சந்தைகள்",
+        "top_bv": "⚪ டாப் 3 BV சந்தைகள் (அதிகபட்ச விலை)",
+        "top_cb": "🟡 டாப் 3 CB சந்தைகள் (அதிகபட்ச விலை)",
+        "search_label": "🔍 சந்தை பெயரைத் தேடுங்கள்:",
+        "sec1_title": "📋 பிரிவு 1: நேரலை சந்தை அட்டவணை",
+        "sec2_title": "📊 பிரிவு 2: சந்தை வரைபடங்கள் & விலை மாற்றங்கள்",
+        "bv_header": "⚪ பை-வோல்டைன் (BV) ரகம்",
+        "cb_header": "🟡 க்ராஸ்-பிரீட் (CB) ரகம்",
+        "lowest": "குறைந்தபட்ச விலை",
+        "highest": "அதிகபட்ச விலை",
+        "avg": "சராசரி விலை",
+        "download_btn": "📥 இன்றைய அறிக்கையைப் பதிவிறக்கவும் (CSV/Excel)",
+        "bar_title": "📊 சந்தை விலை ஒப்பீடு (🔴 குறைந்தபட்சம் | 🟢 அதிகபட்சம் | 🟡 சராசரி)",
+        "line_title": "📈 தினசரி விலை மாற்ற போக்கு",
+        "line_mandi_select": "🎯 விலை போக்கைக் காண சந்தையைத் தேர்ந்தெடுக்கவும்:",
+        "exp_inc": "எதிர்பார்க்கப்படும் வருமானம் (சராசரி)",
+        "max_inc": "அதிகபட்ச சாத்தியமான வருமானம்",
+        "avg_rate": "சராசரி விலை"
+    }
+}
+
+# 3. Modern UI CSS Styling
 st.markdown("""
     <style>
     .stApp {
@@ -62,18 +240,27 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
+# 4. Top Language Selector Bar
+lang_list = ["English", "Kannada (ಕನ್ನಡ)", "Hindi (हिंदी)", "Telugu (తెలుగు)", "Marathi (मराठी)", "Tamil (தமிழ்)"]
+lang_col1, lang_col2 = st.columns([3, 1])
+
+with lang_col2:
+    selected_lang = st.selectbox("🌐 Choose Language / ಭಾಷೆ:", lang_list, index=0)
+
+# Get current dictionary
+T = TEXTS.get(selected_lang, TEXTS["English"])
+
 # Branding Banner Header
-st.markdown("""
+st.markdown(f"""
     <div class='brand-header'>
-        <h1>🌾 Silk Creators - ರೇಷ್ಮೆ ಮಾರುಕಟ್ಟೆ ಬೆಲೆಗಳು</h1>
-        <p>Dedicated to Farmers Service | Live Cocoon Market Rates across India</p>
+        <h1>{T['app_title']}</h1>
+        <p>{T['app_subtitle']}</p>
     </div>
 """, unsafe_allow_html=True)
 
-# Direct CSV URL for 'India Market Rate' tab
 SHEET_URL = "https://docs.google.com/spreadsheets/d/1ysO7bTj3SGMa64vwVcwnojAdxU0J2JkdxvjeKZvuRSU/gviz/tq?tqx=out:csv&sheet=India%20Market%20Rate"
 
-# 3. Data Loader
+# 5. Data Loader
 @st.cache_data(ttl=30)
 def load_data():
     df = pd.read_csv(SHEET_URL)
@@ -105,11 +292,11 @@ try:
     ctrl1, ctrl2, ctrl3 = st.columns([2, 1, 1])
     with ctrl1:
         available_dates = sorted(df['Date'].dropna().unique(), reverse=True)
-        selected_date = st.selectbox("📅 Select Date / ದಿನಾಂಕ:", available_dates if available_dates else ["Latest"])
+        selected_date = st.selectbox(T['select_date'], available_dates if available_dates else ["Latest"])
     
     with ctrl2:
-        st.write("") # Spacer
-        if st.button("🔄 Refresh Data", use_container_width=True):
+        st.write("")
+        if st.button(T['refresh_btn'], use_container_width=True):
             st.cache_data.clear()
             st.rerun()
 
@@ -124,7 +311,7 @@ try:
 
     # WhatsApp Sharing
     with ctrl3:
-        st.write("") # Spacer
+        st.write("")
         bv_avg_str = f"₹{df_bv['Avg'].mean():.0f}" if not df_bv.empty else "N/A"
         cb_avg_str = f"₹{df_cb['Avg'].mean():.0f}" if not df_cb.empty else "N/A"
         
@@ -135,23 +322,24 @@ try:
         st.markdown(f"""
             <a href="{wa_link}" target="_blank" style="text-decoration:none;">
                 <button style="width:100%; background-color:#25D366; color:white; border:none; padding:9px; border-radius:8px; font-weight:bold; cursor:pointer;">
-                    📲 Share WhatsApp
+                    {T['share_wa']}
                 </button>
             </a>
         """, unsafe_allow_html=True)
 
     # -------------------------------------------------------------------------
-    # 🧮 ENHANCED FARMER INCOME ESTIMATOR WITH SIDE-BY-SIDE ALL-MANDI TABLES
+    # 🧮 FARMER INCOME ESTIMATOR CALCULATOR
     # -------------------------------------------------------------------------
-    with st.expander("🧮 **Farmer Revenue Estimator / ಆದಾಯ ಲೆಕ್ಕಾಚಾರ (Compare Income Across All Mandis)**", expanded=True):
-        st.subheader("💰 Compare Your Expected Income Across All Mandis")
+    with st.expander(f"🧮 **{T['calc_title']}**", expanded=True):
+        st.subheader(f"💰 {T['calc_sub']}")
         
         col_input, col_info = st.columns([1, 2])
         with col_input:
-            farmer_qty = st.number_input("Enter your Harvest Weight (in Kg):", min_value=1, max_value=10000, value=100, step=10)
+            farmer_qty = st.number_input(T['harvest_qty'], min_value=1, max_value=10000, value=100, step=10)
         
         with col_info:
-            st.info(f"💡 Showing total payout comparisons for **{farmer_qty} Kg** of cocoons based on **{selected_date}** rates.")
+            calc_info_text = T['calc_info'].format(qty=farmer_qty, date=selected_date)
+            st.info(f"💡 {calc_info_text}")
 
         # Create Income Comparisons for all Mandis
         calc_df = date_df.copy()
@@ -165,68 +353,68 @@ try:
 
             col_calc_bv, col_calc_cb = st.columns(2)
 
-            # --- BV INCOME TABLE ---
+            # BV INCOME TABLE
             with col_calc_bv:
-                st.markdown(f"#### ⚪ Bi-Voltine (BV) Income Comparison ({farmer_qty} Kg)")
+                st.markdown(f"#### {T['bv_header']} ({farmer_qty} Kg)")
                 if not calc_bv.empty:
                     disp_bv = calc_bv[['Market Name', 'Avg', 'Max', 'Expected Income (Avg)', 'Max Potential Income']].sort_values(by='Expected Income (Avg)', ascending=False).copy()
                     
-                    disp_bv['Avg Rate'] = disp_bv['Avg'].apply(lambda x: f"₹{x:.0f}/kg" if pd.notnull(x) else "-")
-                    disp_bv['Expected Income (Avg)'] = disp_bv['Expected Income (Avg)'].apply(lambda x: f"₹{x:,.0f}" if pd.notnull(x) else "-")
-                    disp_bv['Max Potential Income'] = disp_bv['Max Potential Income'].apply(lambda x: f"₹{x:,.0f}" if pd.notnull(x) else "-")
+                    disp_bv[T['avg_rate']] = disp_bv['Avg'].apply(lambda x: f"₹{x:.0f}/kg" if pd.notnull(x) else "-")
+                    disp_bv[T['exp_inc']] = disp_bv['Expected Income (Avg)'].apply(lambda x: f"₹{x:,.0f}" if pd.notnull(x) else "-")
+                    disp_bv[T['max_inc']] = disp_bv['Max Potential Income'].apply(lambda x: f"₹{x:,.0f}" if pd.notnull(x) else "-")
                     
                     st.dataframe(
-                        disp_bv[['Market Name', 'Avg Rate', 'Expected Income (Avg)', 'Max Potential Income']],
+                        disp_bv[['Market Name', T['avg_rate'], T['exp_inc'], T['max_inc']]],
                         use_container_width=True,
                         hide_index=True
                     )
                 else:
-                    st.caption("No BV rate data available for this date.")
+                    st.caption("No BV rate data available.")
 
-            # --- CB INCOME TABLE ---
+            # CB INCOME TABLE
             with col_calc_cb:
-                st.markdown(f"#### 🟡 Cross-Breed (CB) Income Comparison ({farmer_qty} Kg)")
+                st.markdown(f"#### {T['cb_header']} ({farmer_qty} Kg)")
                 if not calc_cb.empty:
                     disp_cb = calc_cb[['Market Name', 'Avg', 'Max', 'Expected Income (Avg)', 'Max Potential Income']].sort_values(by='Expected Income (Avg)', ascending=False).copy()
                     
-                    disp_cb['Avg Rate'] = disp_cb['Avg'].apply(lambda x: f"₹{x:.0f}/kg" if pd.notnull(x) else "-")
-                    disp_cb['Expected Income (Avg)'] = disp_cb['Expected Income (Avg)'].apply(lambda x: f"₹{x:,.0f}" if pd.notnull(x) else "-")
-                    disp_cb['Max Potential Income'] = disp_cb['Max Potential Income'].apply(lambda x: f"₹{x:,.0f}" if pd.notnull(x) else "-")
+                    disp_cb[T['avg_rate']] = disp_cb['Avg'].apply(lambda x: f"₹{x:.0f}/kg" if pd.notnull(x) else "-")
+                    disp_cb[T['exp_inc']] = disp_cb['Expected Income (Avg)'].apply(lambda x: f"₹{x:,.0f}" if pd.notnull(x) else "-")
+                    disp_cb[T['max_inc']] = disp_cb['Max Potential Income'].apply(lambda x: f"₹{x:,.0f}" if pd.notnull(x) else "-")
                     
                     st.dataframe(
-                        disp_cb[['Market Name', 'Avg Rate', 'Expected Income (Avg)', 'Max Potential Income']],
+                        disp_cb[['Market Name', T['avg_rate'], T['exp_inc'], T['max_inc']]],
                         use_container_width=True,
                         hide_index=True
                     )
                 else:
-                    st.caption("No CB rate data available for this date.")
+                    st.caption("No CB rate data available.")
 
     # 🏆 HIGHEST PAYING MANDIS TODAY
     st.markdown("---")
-    st.markdown("### 🏆 Top Highest Paying Mandis Today")
+    st.markdown(f"### {T['top_mandis_title']}")
     top_col1, top_col2 = st.columns(2)
 
     with top_col1:
-        st.markdown("**⚪ Top 3 BV Markets (Highest Rates)**")
+        st.markdown(f"**{T['top_bv']}**")
         if not df_bv.empty:
             top_bv = df_bv.sort_values(by='Max', ascending=False).head(3)
             for idx, row in top_bv.iterrows():
                 st.markdown(f"<div class='top-mandi-card'>🥇 <b>{row['Market Name']}</b> — Max: <b>₹{row['Max']:.0f}/kg</b> (Avg: ₹{row['Avg']:.0f})</div>", unsafe_allow_html=True)
         else:
-            st.caption("No BV data for this date.")
+            st.caption("No BV data.")
 
     with top_col2:
-        st.markdown("**🟡 Top 3 CB Markets (Highest Rates)**")
+        st.markdown(f"**{T['top_cb']}**")
         if not df_cb.empty:
             top_cb = df_cb.sort_values(by='Max', ascending=False).head(3)
             for idx, row in top_cb.iterrows():
                 st.markdown(f"<div class='top-mandi-card'>🥇 <b>{row['Market Name']}</b> — Max: <b>₹{row['Max']:.0f}/kg</b> (Avg: ₹{row['Avg']:.0f})</div>", unsafe_allow_html=True)
         else:
-            st.caption("No CB data for this date.")
+            st.caption("No CB data.")
 
     # INSTANT MANDI SEARCH BAR
     st.markdown("---")
-    search_mandi = st.text_input("🔍 Search Mandi / Market Name (e.g. Ramanagara, Sidlaghatta, Kolar, Gokak):", "").strip()
+    search_mandi = st.text_input(T['search_label'], "").strip()
 
     if search_mandi:
         df_bv = df_bv[df_bv['Market Name'].str.contains(search_mandi, case=False, na=False)]
@@ -235,7 +423,7 @@ try:
     # =========================================================================
     # SECTION 1: LIVE MARKET TABLES (SIDE-BY-SIDE)
     # =========================================================================
-    st.markdown("<div class='section-title'>📋 SECTION 1: LIVE MARKET TABLES (SIDE-BY-SIDE)</div>", unsafe_allow_html=True)
+    st.markdown(f"<div class='section-title'>{T['sec1_title']}</div>", unsafe_allow_html=True)
 
     col_tbl_bv, col_tbl_cb = st.columns(2)
     display_cols = ['Date', 'Market Name', 'Lots', 'Qty (kg)', 'Min', 'Max', 'Avg']
@@ -243,12 +431,12 @@ try:
 
     # LEFT: BV TABLE
     with col_tbl_bv:
-        st.markdown("### ⚪ Bi-Voltine (BV) – ದ್ವಿತಳಿ")
+        st.markdown(f"### {T['bv_header']}")
         if not df_bv.empty:
             m1, m2, m3 = st.columns(3)
-            m1.metric("Lowest", f"₹{df_bv['Min'].min():.0f}")
-            m2.metric("Highest", f"₹{df_bv['Max'].max():.0f}")
-            m3.metric("Average", f"₹{df_bv['Avg'].mean():.0f}")
+            m1.metric(T['lowest'], f"₹{df_bv['Min'].min():.0f}")
+            m2.metric(T['highest'], f"₹{df_bv['Max'].max():.0f}")
+            m3.metric(T['avg'], f"₹{df_bv['Avg'].mean():.0f}")
 
             st.dataframe(
                 df_bv[display_cols].sort_values(by='Date', ascending=False),
@@ -257,16 +445,16 @@ try:
                 height=350
             )
         else:
-            st.info("No Bi-Voltine (BV) entries found.")
+            st.info("No BV entries found.")
 
     # RIGHT: CB TABLE
     with col_tbl_cb:
-        st.markdown("### 🟡 Cross-Breed (CB) – ಮಿಶ್ರತಳಿ")
+        st.markdown(f"### {T['cb_header']}")
         if not df_cb.empty:
             c1, c2, c3 = st.columns(3)
-            c1.metric("Lowest", f"₹{df_cb['Min'].min():.0f}")
-            c2.metric("Highest", f"₹{df_cb['Max'].max():.0f}")
-            c3.metric("Average", f"₹{df_cb['Avg'].mean():.0f}")
+            c1.metric(T['lowest'], f"₹{df_cb['Min'].min():.0f}")
+            c2.metric(T['highest'], f"₹{df_cb['Max'].max():.0f}")
+            c3.metric(T['avg'], f"₹{df_cb['Avg'].mean():.0f}")
 
             st.dataframe(
                 df_cb[display_cols].sort_values(by='Date', ascending=False),
@@ -275,13 +463,13 @@ try:
                 height=350
             )
         else:
-            st.info("No Cross-Breed (CB) entries found.")
+            st.info("No CB entries found.")
 
     # CSV DOWNLOAD
     st.write("")
     csv_data = date_df.to_csv(index=False).encode('utf-8')
     st.download_button(
-        label="📥 Download Today's Rates Report (CSV / Excel)",
+        label=T['download_btn'],
         data=csv_data,
         file_name=f"Silk_Cocoon_Rates_{selected_date}.csv",
         mime="text/csv",
@@ -293,18 +481,18 @@ try:
     # =========================================================================
     # SECTION 2: CHARTS & VISUAL ANALYTICS
     # =========================================================================
-    st.markdown("<div class='section-title'>📊 SECTION 2: MARKET VISUALIZATIONS & PRICE TRENDS</div>", unsafe_allow_html=True)
+    st.markdown(f"<div class='section-title'>{T['sec2_title']}</div>", unsafe_allow_html=True)
 
     color_map = {'Min': '#EF4444', 'Max': '#10B981', 'Avg': '#F59E0B'}
 
     # SUB-SECTION 2A: SIDE-BY-SIDE BAR CHARTS
-    st.markdown("#### 📊 Market Rate Comparison (🔴 Min | 🟢 Max | 🟡 Avg)")
+    st.markdown(f"#### {T['bar_title']}")
     col_bar_bv, col_bar_cb = st.columns(2)
 
     with col_bar_bv:
         if not df_bv.empty:
             melted_bv = pd.melt(df_bv, id_vars=['Market Name'], value_vars=['Min', 'Max', 'Avg'], var_name='Rate_Type', value_name='Price').dropna(subset=['Price'])
-            fig_bv = px.bar(melted_bv, x='Market Name', y='Price', color='Rate_Type', barmode='group', text_auto='.0f', title=f"⚪ BV Rates: {selected_date}", labels={'Market Name': 'Mandi', 'Price': 'Rate (₹/kg)'}, color_discrete_map=color_map)
+            fig_bv = px.bar(melted_bv, x='Market Name', y='Price', color='Rate_Type', barmode='group', text_auto='.0f', title=f"⚪ BV: {selected_date}", labels={'Market Name': 'Mandi', 'Price': 'Rate (₹/kg)'}, color_discrete_map=color_map)
             fig_bv.update_traces(textposition='outside')
             fig_bv.update_layout(xaxis_title="Mandi", yaxis_title="Rate (₹/kg)", legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1), height=420, margin=dict(l=10, r=10, t=50, b=10))
             st.plotly_chart(fig_bv, use_container_width=True)
@@ -312,7 +500,7 @@ try:
     with col_bar_cb:
         if not df_cb.empty:
             melted_cb = pd.melt(df_cb, id_vars=['Market Name'], value_vars=['Min', 'Max', 'Avg'], var_name='Rate_Type', value_name='Price').dropna(subset=['Price'])
-            fig_cb = px.bar(melted_cb, x='Market Name', y='Price', color='Rate_Type', barmode='group', text_auto='.0f', title=f"🟡 CB Rates: {selected_date}", labels={'Market Name': 'Mandi', 'Price': 'Rate (₹/kg)'}, color_discrete_map=color_map)
+            fig_cb = px.bar(melted_cb, x='Market Name', y='Price', color='Rate_Type', barmode='group', text_auto='.0f', title=f"🟡 CB: {selected_date}", labels={'Market Name': 'Mandi', 'Price': 'Rate (₹/kg)'}, color_discrete_map=color_map)
             fig_cb.update_traces(textposition='outside')
             fig_cb.update_layout(xaxis_title="Mandi", yaxis_title="Rate (₹/kg)", legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1), height=420, margin=dict(l=10, r=10, t=50, b=10))
             st.plotly_chart(fig_cb, use_container_width=True)
@@ -320,9 +508,9 @@ try:
     st.markdown("---")
 
     # SUB-SECTION 2B: DAY-WISE PRICE TREND TRAJECTORY
-    st.markdown("#### 📈 Day-wise Price Trajectory Trend")
+    st.markdown(f"#### {T['line_title']}")
     available_markets = ["All Mandis (Overall Trend)"] + sorted([str(m) for m in df['Market Name'].dropna().unique() if str(m).strip() != ''])
-    selected_market = st.selectbox("🎯 Select Market for Day-wise Price Trajectory:", available_markets)
+    selected_market = st.selectbox(T['line_mandi_select'], available_markets)
 
     if selected_market != "All Mandis (Overall Trend)":
         trend_df = df[df['Market Name'] == selected_market].copy()
