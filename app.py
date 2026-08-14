@@ -71,8 +71,8 @@ TEXTS = {
         "top_bv": "⚪ Top 3 BV Markets (Highest Rates)",
         "top_cb": "🟡 Top 3 CB Markets (Highest Rates)",
         "search_label": "🔍 Search Mandi / Market Name:",
-        "sec1_title": "📋 SECTION 1: LIVE MARKET TABLES (SIDE-BY-SIDE)",
-        "sec2_title": "📊 SECTION 2: MARKET VISUALIZATIONS & PRICE TRENDS",
+        "sec1_title": "📋 SECTION 1: LIVE MARKET RATE",
+        "sec2_title": "📊 SECTION 2: MARKET PRICE TRENDS",
         "bv_header": "⚪ Bi-Voltine (BV) – ದ್ವಿತಳಿ",
         "cb_header": "🟡 Cross-Breed (CB) – ಮಿಶ್ರತಳಿ",
         "lowest": "Lowest Rate",
@@ -102,8 +102,8 @@ TEXTS = {
         "top_bv": "⚪ ಟಾಪ್ 3 BV ಮಾರುಕಟ್ಟೆಗಳು (ಗರಿಷ್ಠ ದರ)",
         "top_cb": "🟡 ಟಾಪ್ 3 CB ಮಾರುಕಟ್ಟೆಗಳು (ಗರಿಷ್ಠ ದರ)",
         "search_label": "🔍 ಮಾರುಕಟ್ಟೆ ಹೆಸರನ್ನು ಹುಡುಕಿ:",
-        "sec1_title": "📋 ವಿಭಾಗ 1: ಲೈವ್ ಮಾರುಕಟ್ಟೆ ಕೋಷ್ಟಕಗಳು",
-        "sec2_title": "📊 ವಿಭಾಗ 2: ಮಾರುಕಟ್ಟೆ ನಕ್ಷೆಗಳು ಮತ್ತು ದರ ಟ್ರೆಂಡ್‌ಗಳು",
+        "sec1_title": "📋 ವಿಭಾಗ 1: ಲೈವ್ ಮಾರುಕಟ್ಟೆ ದರಗಳು",
+        "sec2_title": "📊 ವಿಭಾಗ 2: ಮಾರುಕಟ್ಟೆ ದರ ಟ್ರೆಂಡ್‌ಗಳು",
         "bv_header": "⚪ ಬೈವೋಲ್ಟೈನ್ (BV) – ದ್ವಿತಳಿ",
         "cb_header": "🟡 ಕ್ರಾಸ್-ಬ್ರೀಡ್ (CB) – ಮಿಶ್ರತಳಿ",
         "lowest": "ಕನಿಷ್ಠ ದರ",
@@ -133,8 +133,8 @@ TEXTS = {
         "top_bv": "⚪ टॉप 3 BV मंडियां (उच्चतम रेट)",
         "top_cb": "🟡 टॉप 3 CB मंडियां (उच्चतम रेट)",
         "search_label": "🔍 मंडी का नाम खोजें:",
-        "sec1_title": "📋 अनुभाग 1: लाइव बाज़ार तालिकाएं (आमने-सामने)",
-        "sec2_title": "📊 अनुभाग 2: बाज़ार चार्ट और मूल्य रुझान",
+        "sec1_title": "📋 अनुभाग 1: लाइव बाज़ार दरें",
+        "sec2_title": "📊 अनुभाग 2: बाज़ार मूल्य रुझान",
         "bv_header": "⚪ बाई-वोल्टाइन (BV) रेशम",
         "cb_header": "🟡 क्रॉस-ब्रीड (CB) रेशम",
         "lowest": "न्यूनतम दर",
@@ -164,8 +164,8 @@ TEXTS = {
         "top_bv": "⚪ టాప్ 3 BV మార్కెట్లు (అత్యధిక ధర)",
         "top_cb": "🟡 టాప్ 3 CB మార్కెట్లు (అత్యధిక ధర)",
         "search_label": "🔍 మార్కెట్ పేరును శోధించండి:",
-        "sec1_title": "📋 విభాగం 1: లైవ్ మార్కెట్ పట్టికలు",
-        "sec2_title": "📊 విభాగం 2: మార్కెట్ విశ్లేషణ మరియు ధరల ధోరణులు",
+        "sec1_title": "📋 విభాగం 1: లైవ్ మార్కెట్ ధరలు",
+        "sec2_title": "📊 విభాగం 2: మార్కెట్ ధరల ధోరణులు",
         "bv_header": "⚪ బై-వోల్టైన్ (BV) రకం",
         "cb_header": "🟡 క్రాస్-బ్రీడ్ (CB) రకం",
         "lowest": "కనీస ధర",
@@ -195,8 +195,8 @@ TEXTS = {
         "top_bv": "⚪ टॉप 3 BV बाजार (सर्वाधिक भाव)",
         "top_cb": "🟡 टॉप 3 CB बाजार (सर्वाधिक भाव)",
         "search_label": "🔍 बाजार समिती नाव शोधा:",
-        "sec1_title": "📋 विभाग १: लाईव्ह बाजारभाव तक्ता",
-        "sec2_title": "📊 विभाग २: बाजारभाव चार्ट आणि ट्रेंड्स",
+        "sec1_title": "📋 विभाग १: लाईव्ह बाजारभाव",
+        "sec2_title": "📊 विभाग २: बाजारभाव ट्रेंड्स",
         "bv_header": "⚪ बाय-व्होल्टाईन (BV) रेशीम",
         "cb_header": "🟡 क्रॉस-ब्रीड (CB) रेशीम",
         "lowest": "किमान भाव",
@@ -226,8 +226,8 @@ TEXTS = {
         "top_bv": "⚪ டாப் 3 BV சந்தைகள் (அதிகபட்ச விலை)",
         "top_cb": "🟡 டாப் 3 CB சந்தைகள் (அதிகபட்ச விலை)",
         "search_label": "🔍 சந்தை பெயரைத் தேடுங்கள்:",
-        "sec1_title": "📋 பிரிவு 1: நேரலை சந்தை அட்டவணை",
-        "sec2_title": "📊 பிரிவு 2: சந்தை வரைபடங்கள் & விலை மாற்றங்கள்",
+        "sec1_title": "📋 பிரிவு 1: நேரலை சந்தை விலை",
+        "sec2_title": "📊 பிரிவு 2: சந்தை விலை மாற்றங்கள்",
         "bv_header": "⚪ பை-வோல்டைன் (BV) ரகம்",
         "cb_header": "🟡 க்ராஸ்-பிரீட் (CB) ரகம்",
         "lowest": "குறைந்தபட்ச விலை",
@@ -417,9 +417,35 @@ try:
             </a>
         """, unsafe_allow_html=True)
 
-    # -------------------------------------------------------------------------
-    # 🧮 FARMER INCOME ESTIMATOR CALCULATOR
-    # -------------------------------------------------------------------------
+    # =========================================================================
+    # SECTION 1: LIVE MARKET RATE (ON TOP)
+    # =========================================================================
+    st.markdown(f"<div class='section-title'>{T['sec1_title']}</div>", unsafe_allow_html=True)
+
+    # 1A. TOP HIGHEST PAYING MANDIS TODAY
+    st.markdown(f"### {T['top_mandis_title']}")
+    top_col1, top_col2 = st.columns(2)
+
+    with top_col1:
+        st.markdown(f"**{T['top_bv']}**")
+        if not df_bv.empty:
+            top_bv = df_bv.sort_values(by='Max', ascending=False).head(3)
+            for idx, row in top_bv.iterrows():
+                st.markdown(f"<div class='top-mandi-card'>🥇 <b>{row['Market Name']}</b> — Max: <b>₹{row['Max']:.0f}/kg</b> (Avg: ₹{row['Avg']:.0f})</div>", unsafe_allow_html=True)
+        else:
+            st.caption("No BV data.")
+
+    with top_col2:
+        st.markdown(f"**{T['top_cb']}**")
+        if not df_cb.empty:
+            top_cb = df_cb.sort_values(by='Max', ascending=False).head(3)
+            for idx, row in top_cb.iterrows():
+                st.markdown(f"<div class='top-mandi-card'>🥇 <b>{row['Market Name']}</b> — Max: <b>₹{row['Max']:.0f}/kg</b> (Avg: ₹{row['Avg']:.0f})</div>", unsafe_allow_html=True)
+        else:
+            st.caption("No CB data.")
+
+    # 1B. FARMER REVENUE ESTIMATOR CALCULATOR
+    st.write("")
     with st.expander(f"🧮 **{T['calc_title']}**", expanded=True):
         st.subheader(f"💰 {T['calc_sub']}")
         
@@ -481,30 +507,7 @@ try:
                 else:
                     st.caption("No CB rate data available.")
 
-    # 🏆 HIGHEST PAYING MANDIS TODAY
-    st.markdown("---")
-    st.markdown(f"### {T['top_mandis_title']}")
-    top_col1, top_col2 = st.columns(2)
-
-    with top_col1:
-        st.markdown(f"**{T['top_bv']}**")
-        if not df_bv.empty:
-            top_bv = df_bv.sort_values(by='Max', ascending=False).head(3)
-            for idx, row in top_bv.iterrows():
-                st.markdown(f"<div class='top-mandi-card'>🥇 <b>{row['Market Name']}</b> — Max: <b>₹{row['Max']:.0f}/kg</b> (Avg: ₹{row['Avg']:.0f})</div>", unsafe_allow_html=True)
-        else:
-            st.caption("No BV data.")
-
-    with top_col2:
-        st.markdown(f"**{T['top_cb']}**")
-        if not df_cb.empty:
-            top_cb = df_cb.sort_values(by='Max', ascending=False).head(3)
-            for idx, row in top_cb.iterrows():
-                st.markdown(f"<div class='top-mandi-card'>🥇 <b>{row['Market Name']}</b> — Max: <b>₹{row['Max']:.0f}/kg</b> (Avg: ₹{row['Avg']:.0f})</div>", unsafe_allow_html=True)
-        else:
-            st.caption("No CB data.")
-
-    # INSTANT MANDI SEARCH BAR
+    # 1C. INSTANT MANDI SEARCH BAR
     st.markdown("---")
     search_mandi = st.text_input(T['search_label'], "").strip()
 
@@ -512,11 +515,7 @@ try:
         df_bv = df_bv[df_bv['Market Name'].str.contains(search_mandi, case=False, na=False)]
         df_cb = df_cb[df_cb['Market Name'].str.contains(search_mandi, case=False, na=False)]
 
-    # =========================================================================
-    # SECTION 1: LIVE MARKET TABLES (SIDE-BY-SIDE)
-    # =========================================================================
-    st.markdown(f"<div class='section-title'>{T['sec1_title']}</div>", unsafe_allow_html=True)
-
+    # 1D. LIVE MARKET TABLES (SIDE-BY-SIDE)
     col_tbl_bv, col_tbl_cb = st.columns(2)
     display_cols = ['Date', 'Market Name', 'Lots', 'Qty (kg)', 'Min', 'Max', 'Avg']
     display_cols = [c for c in display_cols if c in df.columns]
@@ -557,7 +556,7 @@ try:
         else:
             st.info("No CB entries found.")
 
-    # CSV DOWNLOAD
+    # 1E. CSV DOWNLOAD BUTTON
     st.write("")
     csv_data = date_df.to_csv(index=False).encode('utf-8')
     st.download_button(
@@ -571,13 +570,13 @@ try:
     st.markdown("---")
 
     # =========================================================================
-    # SECTION 2: CHARTS & VISUAL ANALYTICS
+    # SECTION 2: MARKET PRICE TRENDS (BOTTOM)
     # =========================================================================
     st.markdown(f"<div class='section-title'>{T['sec2_title']}</div>", unsafe_allow_html=True)
 
     color_map = {'Min': '#EF4444', 'Max': '#10B981', 'Avg': '#F59E0B'}
 
-    # SUB-SECTION 2A: SIDE-BY-SIDE BAR CHARTS
+    # 2A. SIDE-BY-SIDE BAR CHARTS
     st.markdown(f"#### {T['bar_title']}")
     col_bar_bv, col_bar_cb = st.columns(2)
 
@@ -599,7 +598,7 @@ try:
 
     st.markdown("---")
 
-    # SUB-SECTION 2B: DAY-WISE PRICE TREND TRAJECTORY
+    # 2B. DAY-WISE PRICE TRAJECTORY TREND
     st.markdown(f"#### {T['line_title']}")
     available_markets = ["All Mandis (Overall Trend)"] + sorted([str(m) for m in df['Market Name'].dropna().unique() if str(m).strip() != ''])
     selected_market = st.selectbox(T['line_mandi_select'], available_markets)
