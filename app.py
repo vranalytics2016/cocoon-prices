@@ -9,15 +9,22 @@ st.set_page_config(
     layout="wide"
 )
 
-# Header
-st.title("🌾 Silk Creators - Live Cocoon Market Dashboard")
-st.caption("Real-Time Price Analytics & Day-wise Market Trends")
+# Custom Styling
+st.markdown("""
+    <style>
+    .main-title { font-size: 26px; font-weight: bold; color: #1E3A8A; }
+    .sub-title { font-size: 14px; color: #6B7280; margin-bottom: 20px; }
+    </style>
+""", unsafe_allow_html=True)
 
-# Direct CSV URL targeting the 'India Market Rate' tab directly
+st.markdown("<div class='main-title'>🌾 Silk Creators - Live Market Analytics</div>", unsafe_allow_html=True)
+st.markdown("<div class='sub-title'>Real-Time Price Tracking & Day-Wise Market Trends</div>", unsafe_allow_html=True)
+
+# Direct CSV URL for 'India Market Rate' tab
 SHEET_URL = "https://docs.google.com/spreadsheets/d/1ysO7bTj3SGMa64vwVcwnojAdxU0J2JkdxvjeKZvuRSU/gviz/tq?tqx=out:csv&sheet=India%20Market%20Rate"
 
 # 2. Data Loader & Cleaning
-@st.cache_data(ttl=30)  # Auto-refreshes every 30 seconds
+@st.cache_data(ttl=30)
 def load_data():
     df = pd.read_csv(SHEET_URL)
     df.columns = [str(c).strip() for c in df.columns]
@@ -29,9 +36,17 @@ def load_data():
             df[col] = df[col].astype(str).str.replace('₹', '').str.replace(',', '').str.strip()
             df[col] = pd.to_numeric(df[col], errors='coerce')
 
-    # Convert Date column for chronological charting
+    # Standardize Variety labels
+    if 'Variety' in df.columns:
+        df['Variety_Clean'] = df['Variety'].apply(
+            lambda x: 'Bi-Voltine (BV)' if any(k in str(x).lower() for k in ['bv', 'bivoltine', 'ದ್ವಿತಳಿ']) 
+            else ('Cross-Breed (CB)' if any(k in str(x).lower() for k in ['cb', 'cross', 'ಮಿಶ್ರತಳಿ']) else 'General')
+        )
+
+    # Convert Date column strictly to Date objects (removes 00:00 time noise)
     if 'Date' in df.columns:
-        df['Date_Parsed'] = pd.to_datetime(df['Date'], dayfirst=True, errors='coerce')
+        df['Date_Parsed'] = pd.to_datetime(df['Date'], dayfirst=True, errors='coerce').dt.date
+        df = df.dropna(subset=['Date_Parsed'])
         df = df.sort_values(by='Date_Parsed', ascending=True)
 
     return df
@@ -39,87 +54,95 @@ def load_data():
 try:
     df = load_data()
 
-    # Refresh Button
-    c_title, c_btn = st.columns([4, 1])
-    with c_btn:
-        if st.button("🔄 Refresh Data"):
+    # Top Controls Bar
+    col_a, col_b = st.columns([4, 1])
+    with col_b:
+        if st.button("🔄 Refresh Rates"):
             st.cache_data.clear()
             st.rerun()
 
-    # Separate Data into BV and CB DataFrames
-    bv_mask = df['Variety'].astype(str).str.contains('BV|Bi-Voltine|ದ್ವಿತಳಿ', case=False, na=False)
-    cb_mask = df['Variety'].astype(str).str.contains('CB|Cross|ಮಿಶ್ರತಳಿ', case=False, na=False)
-
-    df_bv = df[bv_mask].copy()
-    df_cb = df[cb_mask].copy()
+    # Separate DataFrames
+    df_bv = df[df['Variety_Clean'] == 'Bi-Voltine (BV)'].copy()
+    df_cb = df[df['Variety_Clean'] == 'Cross-Breed (CB)'].copy()
 
     # -------------------------------------------------------------
-    # SECTION 1: DAY-WISE PRICE CHANGE CHART
+    # SECTION 1: CLEAN DAY-WISE PRICE TREND CHART
     # -------------------------------------------------------------
-    st.markdown("## 📈 Day-wise Price Change Trend")
+    st.markdown("### 📈 Day-wise Price Change Trend")
     
-    col_chart_1, col_chart_2 = st.columns(2)
-    with col_chart_1:
-        # Market Filter for Chart
-        available_markets = ["All Markets"] + list(df['Market Name'].dropna().unique())
-        selected_market_chart = st.selectbox("🎯 Filter Chart by Market:", available_markets)
+    # Market Selector
+    available_markets = ["All Mandis (Overall Trend)"] + sorted([str(m) for m in df['Market Name'].dropna().unique() if str(m).strip() != ''])
+    selected_market = st.selectbox("🎯 Filter Trend Chart by Market:", available_markets)
 
-    with col_chart_2:
-        variety_choice = st.radio("Select Variety for Trend Chart:", ["Both (BV & CB)", "Bi-Voltine (BV) Only", "Cross-Breed (CB) Only"], horizontal=True)
+    # Filter data for chart
+    if selected_market != "All Mandis (Overall Trend)":
+        filtered_chart_df = df[df['Market Name'] == selected_market]
+    else:
+        filtered_chart_df = df.copy()
 
-    # Filter chart dataframe
-    chart_df = df.copy()
-    if selected_market_chart != "All Markets":
-        chart_df = chart_df[chart_df['Market Name'] == selected_market_chart]
+    # Group by Date and Variety to get clean 1-point per day averages
+    daily_trend = filtered_chart_df.groupby(['Date_Parsed', 'Variety_Clean'])['Avg'].mean().reset_index()
+    daily_trend['Date_Formatted'] = daily_trend['Date_Parsed'].astype(str)
 
-    if variety_choice == "Bi-Voltine (BV) Only":
-        chart_df = chart_df[chart_df['Variety'].astype(str).str.contains('BV|Bi-Voltine|ದ್ವಿತಳಿ', case=False, na=False)]
-    elif variety_choice == "Cross-Breed (CB) Only":
-        chart_df = chart_df[chart_df['Variety'].astype(str).str.contains('CB|Cross|ಮಿಶ್ರತಳಿ', case=False, na=False)]
+    if not daily_trend.empty:
+        # Custom color map for clean distinction
+        color_map = {
+            'Bi-Voltine (BV)': '#1E3A8A',    # Deep Navy Blue
+            'Cross-Breed (CB)': '#D97706',   # Amber Gold
+            'General': '#6B7280'             # Gray
+        }
 
-    if not chart_df.empty and 'Date_Parsed' in chart_df.columns and 'Avg' in chart_df.columns:
         fig = px.line(
-            chart_df,
-            x='Date_Parsed',
+            daily_trend,
+            x='Date_Formatted',
             y='Avg',
-            color='Market Name',
-            symbol='Variety',
-            title=f"Daily Average Price Trend (₹/kg) - {selected_market_chart}",
-            labels={'Date_Parsed': 'Date', 'Avg': 'Average Rate (₹)'},
-            markers=True
+            color='Variety_Clean',
+            title=f"Average Price Trend (₹/kg) — {selected_market}",
+            markers=True,
+            color_discrete_map=color_map,
+            labels={'Date_Formatted': 'Date', 'Avg': 'Avg Rate (₹/kg)', 'Variety_Clean': 'Variety'}
         )
-        fig.update_layout(hovermode="x unified", height=400)
+
+        # Styling adjustments for clean presentation
+        fig.update_xaxes(type='category')  # Ensures no 00:00 time ticks!
+        fig.update_traces(line=dict(width=3), marker=dict(size=8))
+        fig.update_layout(
+            xaxis_title="Date",
+            yaxis_title="Average Price (₹/kg)",
+            hovermode="x unified",
+            legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1),
+            margin=dict(l=20, r=20, t=50, b=20),
+            height=380
+        )
+
         st.plotly_chart(fig, use_container_width=True)
     else:
-        st.info("Insufficient date points available yet to render trend chart.")
+        st.info("No sufficient date entries available to plot the trend graph.")
 
     st.markdown("---")
 
     # -------------------------------------------------------------
     # SECTION 2: SEPARATE TABLES FOR BV AND CB
     # -------------------------------------------------------------
-    st.markdown("## 📋 Market Rates by Variety")
+    st.markdown("### 📋 Market Rates by Variety")
     
-    # Create Tabs for BV and CB
     tab_bv, tab_cb, tab_all = st.tabs([
         "⚪ Bi-Voltine (BV) – ದ್ವಿತಳಿ", 
         "🟡 Cross-Breed (CB) – ಮಿಶ್ರತಳಿ", 
-        "📊 All Combined Data"
+        "📊 All Records Feed"
     ])
 
-    # Display Columns Setup
     display_cols = ['Date', 'Market Name', 'Lots', 'Qty (kg)', 'Min', 'Max', 'Avg']
     display_cols = [c for c in display_cols if c in df.columns]
 
-    # TAB 1: Bi-Voltine (BV)
+    # TAB 1: BV
     with tab_bv:
         st.subheader("⚪ Bi-Voltine (BV) Cocoon Rates")
         if not df_bv.empty:
-            # Summary Metrics for BV
             m1, m2, m3 = st.columns(3)
-            m1.metric("BV Lowest Rate", f"₹{df_bv['Min'].min():.0f}")
-            m2.metric("BV Highest Rate", f"₹{df_bv['Max'].max():.0f}")
-            m3.metric("BV Today's Avg Rate", f"₹{df_bv['Avg'].mean():.0f}")
+            m1.metric("Lowest Rate", f"₹{df_bv['Min'].min():.0f}")
+            m2.metric("Highest Rate", f"₹{df_bv['Max'].max():.0f}")
+            m3.metric("Average Rate", f"₹{df_bv['Avg'].mean():.0f}")
 
             st.dataframe(
                 df_bv[display_cols].sort_values(by='Date', ascending=False),
@@ -127,17 +150,16 @@ try:
                 hide_index=True
             )
         else:
-            st.warning("No Bi-Voltine (BV) data records found.")
+            st.warning("No Bi-Voltine (BV) entries found.")
 
-    # TAB 2: Cross-Breed (CB)
+    # TAB 2: CB
     with tab_cb:
         st.subheader("🟡 Cross-Breed (CB) Cocoon Rates")
         if not df_cb.empty:
-            # Summary Metrics for CB
             c1, c2, c3 = st.columns(3)
-            c1.metric("CB Lowest Rate", f"₹{df_cb['Min'].min():.0f}")
-            c2.metric("CB Highest Rate", f"₹{df_cb['Max'].max():.0f}")
-            c3.metric("CB Today's Avg Rate", f"₹{df_cb['Avg'].mean():.0f}")
+            c1.metric("Lowest Rate", f"₹{df_cb['Min'].min():.0f}")
+            c2.metric("Highest Rate", f"₹{df_cb['Max'].max():.0f}")
+            c3.metric("Average Rate", f"₹{df_cb['Avg'].mean():.0f}")
 
             st.dataframe(
                 df_cb[display_cols].sort_values(by='Date', ascending=False),
@@ -145,20 +167,20 @@ try:
                 hide_index=True
             )
         else:
-            st.warning("No Cross-Breed (CB) data records found.")
+            st.warning("No Cross-Breed (CB) entries found.")
 
-    # TAB 3: Combined View
+    # TAB 3: Combined
     with tab_all:
-        st.subheader("📊 All Markets Raw Feed")
-        all_cols = ['Date', 'Market Name', 'Variety', 'Lots', 'Qty (kg)', 'Min', 'Max', 'Avg']
-        all_cols = [c for c in all_cols if c in df.columns]
+        st.subheader("📊 Combined Live Feed")
+        raw_cols = ['Date', 'Market Name', 'Variety', 'Lots', 'Qty (kg)', 'Min', 'Max', 'Avg']
+        raw_cols = [c for c in raw_cols if c in df.columns]
         st.dataframe(
-            df[all_cols].sort_values(by='Date', ascending=False),
+            df[raw_cols].sort_values(by='Date', ascending=False),
             use_container_width=True,
             hide_index=True
         )
 
-    st.success("✅ **Connected Live to Google Sheet:** 'India Market Rate' tab.")
+    st.success("✅ **Live Data Connected:** 'India Market Rate' Sheet")
 
 except Exception as e:
-    st.error(f"⚠️ Unable to load Google Sheet data: {e}")
+    st.error(f"⚠️ Error loading sheet data: {e}")
