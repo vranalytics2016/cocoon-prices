@@ -24,6 +24,7 @@ def get_profile_image():
     return "https://ui-avatars.com/api/?name=Arun+Magar&background=2563EB&color=fff&size=128"
 
 img_src = get_profile_image()
+wa_qr_url = "https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=https://wa.me/919637008151"
 
 # 2. Complete Robust Multilingual Translations Dictionary (I18N)
 TEXTS = {
@@ -215,7 +216,7 @@ TEXTS = {
     }
 }
 
-# 3. High-Contrast Readability Styling
+# 3. High-Contrast Universal CSS Rules
 st.markdown("""
     <style>
     .stApp {
@@ -262,11 +263,11 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # 4. Global Language Selection Engine
-lang_list = ["English", "Kannada (ಕನ್ನಡ)", "Hindi (हिंदी)", "Telugu (తెలుగు)", "Marathi (ಮರಾಠಿ)", "Tamil (தமிழ்)"]
+lang_list = ["English", "Kannada (ಕನ್ನಡ)", "Hindi (हिंदी)", "Telugu (తెలుగు)", "Marathi (मराठी)", "Tamil (தமிழ்)"]
 lang_col1, lang_col2 = st.columns([3, 1])
 
 with lang_col2:
-    selected_lang = st.selectbox("🌐 Choose Language / ಭಾಷೆ:", lang_list, index=0, key="global_language_selector")
+    selected_lang = st.selectbox("🌐 Choose Language / ಭಾಷೆ / भाषा / భాష / மொழி:", lang_list, index=0, key="global_language_selector")
 
 T = TEXTS.get(selected_lang, TEXTS["English"])
 
