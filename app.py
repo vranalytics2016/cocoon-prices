@@ -9,22 +9,15 @@ st.set_page_config(
     layout="wide"
 )
 
-# Custom Header Styling
-st.markdown("""
-    <style>
-    .main-title { font-size: 26px; font-weight: bold; color: #1E3A8A; }
-    .sub-title { font-size: 14px; color: #6B7280; margin-bottom: 20px; }
-    </style>
-""", unsafe_allow_html=True)
-
-st.markdown("<div class='main-title'>🌾 Silk Creators - Live Market Analytics</div>", unsafe_allow_html=True)
-st.markdown("<div class='sub-title'>Dedicated to Farmers Service | Live Cocoon Market Rates</div>", unsafe_allow_html=True)
+# Title Header
+st.markdown("<h2 style='color: #1E3A8A;'>🌾 Silk Creators - Live Market Analytics</h2>", unsafe_allow_html=True)
+st.caption("Dedicated to Farmers Service | Live Cocoon Market Rates Side-by-Side Comparison")
 
 # Direct CSV URL for 'India Market Rate' tab
 SHEET_URL = "https://docs.google.com/spreadsheets/d/1ysO7bTj3SGMa64vwVcwnojAdxU0J2JkdxvjeKZvuRSU/gviz/tq?tqx=out:csv&sheet=India%20Market%20Rate"
 
 # 2. Data Loader & Cleaner
-@st.cache_data(ttl=30)  # Auto-refreshes every 30 seconds
+@st.cache_data(ttl=30)
 def load_data():
     df = pd.read_csv(SHEET_URL)
     df.columns = [str(c).strip() for c in df.columns]
@@ -54,87 +47,123 @@ def load_data():
 try:
     df = load_data()
 
-    # Controls Bar
+    # Refresh Control
     c_title, c_btn = st.columns([4, 1])
     with c_btn:
         if st.button("🔄 Refresh Rates"):
             st.cache_data.clear()
             st.rerun()
 
-    # Separate DataFrames
+    # Data Subset DataFrames
     df_bv = df[df['Variety_Clean'] == 'Bi-Voltine (BV)'].copy()
     df_cb = df[df['Variety_Clean'] == 'Cross-Breed (CB)'].copy()
 
     # Main Navigation Tabs
     tab_bar, tab_line, tab_bv, tab_cb = st.tabs([
-        "📊 Market Rates Bar Chart (Min/Max/Avg)", 
+        "📊 Side-by-Side Bar Charts (BV vs CB)", 
         "📈 Day-wise Price Trend", 
         "⚪ Bi-Voltine (BV) Table", 
         "🟡 Cross-Breed (CB) Table"
     ])
 
+    # Color Scheme (Matching your Excel image)
+    color_map = {
+        'Min': '#EF4444',  # Red
+        'Max': '#10B981',  # Bright Green
+        'Avg': '#F59E0B'   # Amber Yellow
+    }
+
     # -------------------------------------------------------------
-    # TAB 1: INTERACTIVE GROUPED BAR CHART (MIN, MAX, AVG)
+    # TAB 1: SIDE-BY-SIDE BAR CHARTS (BV vs CB)
     # -------------------------------------------------------------
     with tab_bar:
-        st.markdown("### 📊 Market-Wise Min, Max & Avg Comparison (₹/kg)")
+        st.markdown("### 📊 Market Rates Side-by-Side Comparison (₹/kg)")
         
-        col_f1, col_f2 = st.columns(2)
-        with col_f1:
-            # Variety Selector for Bar Chart
-            bar_variety = st.radio("Select Cocoon Variety:", ["Bi-Voltine (BV)", "Cross-Breed (CB)"], horizontal=True)
-        
-        with col_f2:
-            # Date Selector
-            available_dates = sorted(df['Date'].dropna().unique(), reverse=True)
-            selected_date = st.selectbox("📅 Select Date:", available_dates if available_dates else ["Latest"])
+        # Shared Date Selector
+        available_dates = sorted(df['Date'].dropna().unique(), reverse=True)
+        selected_date = st.selectbox("📅 Select Date for Charts:", available_dates if available_dates else ["Latest"])
 
-        # Filter Data
-        bar_df = df[df['Variety_Clean'] == bar_variety].copy()
-        if selected_date != "Latest" and 'Date' in bar_df.columns:
-            bar_df = bar_df[bar_df['Date'] == selected_date]
+        # Filter Data by Date
+        date_filtered_df = df.copy()
+        if selected_date != "Latest" and 'Date' in date_filtered_df.columns:
+            date_filtered_df = date_filtered_df[date_filtered_df['Date'] == selected_date]
 
-        if not bar_df.empty:
-            # Reshape data into long format for Min, Max, Avg grouped bars
-            melted_df = pd.melt(
-                bar_df,
-                id_vars=['Market Name'],
-                value_vars=['Min', 'Max', 'Avg'],
-                var_name='Rate_Type',
-                value_name='Price'
-            ).dropna(subset=['Price'])
+        # CREATE TWO SIDE-BY-SIDE COLUMNS
+        col_bv, col_cb = st.columns(2)
 
-            # Custom Color Map: Red for Min, Green for Max, Amber Yellow for Avg
-            color_map = {
-                'Min': '#EF4444',  # Red
-                'Max': '#10B981',  # Bright Green
-                'Avg': '#F59E0B'   # Amber Yellow
-            }
+        # LEFT COLUMN: BI-VOLTINE (BV) CHART
+        with col_bv:
+            st.subheader("⚪ Bi-Voltine (BV) Rates")
+            bv_chart_df = date_filtered_df[date_filtered_df['Variety_Clean'] == 'Bi-Voltine (BV)'].copy()
 
-            fig_bar = px.bar(
-                melted_df,
-                x='Market Name',
-                y='Price',
-                color='Rate_Type',
-                barmode='group',
-                text_auto='.0f', # Displays values on top of bars
-                title=f"{bar_variety} Cocoon Rates by Market (🔴 Min | 🟢 Max | 🟡 Avg)",
-                labels={'Market Name': 'Mandi / Market', 'Price': 'Price (₹/kg)', 'Rate_Type': 'Rate Type'},
-                color_discrete_map=color_map
-            )
+            if not bv_chart_df.empty:
+                melted_bv = pd.melt(
+                    bv_chart_df,
+                    id_vars=['Market Name'],
+                    value_vars=['Min', 'Max', 'Avg'],
+                    var_name='Rate_Type',
+                    value_name='Price'
+                ).dropna(subset=['Price'])
 
-            fig_bar.update_traces(textposition='outside')
-            fig_bar.update_layout(
-                xaxis_title="Market / Mandi",
-                yaxis_title="Rate (₹/kg)",
-                legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1),
-                height=480,
-                margin=dict(l=20, r=20, t=60, b=20)
-            )
+                fig_bv = px.bar(
+                    melted_bv,
+                    x='Market Name',
+                    y='Price',
+                    color='Rate_Type',
+                    barmode='group',
+                    text_auto='.0f', # Numbers on top of bars
+                    title=f"⚪ BV Rates: {selected_date} (🔴 Min | 🟢 Max | 🟡 Avg)",
+                    labels={'Market Name': 'Mandi', 'Price': 'Price (₹/kg)', 'Rate_Type': 'Rate'},
+                    color_discrete_map=color_map
+                )
+                fig_bv.update_traces(textposition='outside')
+                fig_bv.update_layout(
+                    xaxis_title="Market / Mandi",
+                    yaxis_title="Rate (₹/kg)",
+                    legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1),
+                    height=450,
+                    margin=dict(l=10, r=10, t=50, b=10)
+                )
+                st.plotly_chart(fig_bv, use_container_width=True)
+            else:
+                st.info("No Bi-Voltine (BV) entries available for this date.")
 
-            st.plotly_chart(fig_bar, use_container_width=True)
-        else:
-            st.warning("No price data available for the selected variety/date.")
+        # RIGHT COLUMN: CROSS-BREED (CB) CHART
+        with col_cb:
+            st.subheader("🟡 Cross-Breed (CB) Rates")
+            cb_chart_df = date_filtered_df[date_filtered_df['Variety_Clean'] == 'Cross-Breed (CB)'].copy()
+
+            if not cb_chart_df.empty:
+                melted_cb = pd.melt(
+                    cb_chart_df,
+                    id_vars=['Market Name'],
+                    value_vars=['Min', 'Max', 'Avg'],
+                    var_name='Rate_Type',
+                    value_name='Price'
+                ).dropna(subset=['Price'])
+
+                fig_cb = px.bar(
+                    melted_cb,
+                    x='Market Name',
+                    y='Price',
+                    color='Rate_Type',
+                    barmode='group',
+                    text_auto='.0f', # Numbers on top of bars
+                    title=f"🟡 CB Rates: {selected_date} (🔴 Min | 🟢 Max | 🟡 Avg)",
+                    labels={'Market Name': 'Mandi', 'Price': 'Price (₹/kg)', 'Rate_Type': 'Rate'},
+                    color_discrete_map=color_map
+                )
+                fig_cb.update_traces(textposition='outside')
+                fig_cb.update_layout(
+                    xaxis_title="Market / Mandi",
+                    yaxis_title="Rate (₹/kg)",
+                    legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1),
+                    height=450,
+                    margin=dict(l=10, r=10, t=50, b=10)
+                )
+                st.plotly_chart(fig_cb, use_container_width=True)
+            else:
+                st.info("No Cross-Breed (CB) entries available for this date.")
 
     # -------------------------------------------------------------
     # TAB 2: DAY-WISE PRICE TREND CHART
@@ -157,7 +186,7 @@ try:
             color_map_line = {
                 'Bi-Voltine (BV)': '#1E3A8A',    # Deep Navy Blue
                 'Cross-Breed (CB)': '#D97706',   # Amber Gold
-                'General': '#6B7280'             # Gray
+                'General': '#6B7280'
             }
 
             fig_line = px.line(
