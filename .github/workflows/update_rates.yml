@@ -7,17 +7,17 @@ on:
   workflow_dispatch: # Allows manual run anytime from GitHub UI
 
 permissions:
-  contents: write # Grants GitHub Actions permission to commit files
+  contents: write
 
 jobs:
   update-data:
     runs-on: ubuntu-latest
     steps:
       - name: Check out repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Set up Python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version: '3.10'
 
