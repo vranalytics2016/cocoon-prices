@@ -15,7 +15,7 @@ st.set_page_config(
     initial_sidebar_state="collapsed"
 )
 
-# Function to get sharp image in ORIGINAL rectangular shape
+# Function to get sharp avatar image
 def get_profile_image():
     for fname in ["arun_magar.jpg", "arun_magar.png", "arun_magar.jpeg"]:
         if os.path.exists(fname):
@@ -27,10 +27,10 @@ def get_profile_image():
 
 img_src = get_profile_image()
 
-# 🌐 REAL-TIME GOOGLE MY MAPS VIEW COUNTER SCRAPER
+# REAL-TIME GOOGLE MY MAPS VIEW COUNTER SCRAPER
 MAP_URL = "https://www.google.com/maps/d/u/0/viewer?mid=1EvaJdvlAcQf3m4cjrKkwKuzSDoIK8r4"
 
-@st.cache_data(ttl=3600)  # Auto-refreshes map view count every hour
+@st.cache_data(ttl=3600)
 def get_realtime_map_views():
     try:
         req = urllib.request.Request(
@@ -54,7 +54,7 @@ def get_realtime_map_views():
 live_map_views = get_realtime_map_views()
 wa_qr_url = "https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=https://wa.me/919637008151"
 
-# 2. Complete Multilingual Translations Dictionary (I18N)
+# 2. Multilingual Translations Dictionary
 TEXTS = {
     "English": {
         "app_title": "🌾 Silk Creators - Live Cocoon Rates",
@@ -357,12 +357,17 @@ with st.container():
 </div>"""
         st.markdown(map_html, unsafe_allow_html=True)
 
-SHEET_URL = "https://docs.google.com/spreadsheets/d/1ysO7bTj3SGMa64vwVcwnojAdxU0J2JkdxvjeKZvuRSU/gviz/tq?tqx=out:csv&sheet=India%20Market%20Rate"
-
-# 6. Data Loader
+# 6. DATA LOADER (LOCAL CSV FIRST, FALLBACK TO GOOGLE SHEET)
 @st.cache_data(ttl=30)
 def load_data():
-    df = pd.read_csv(SHEET_URL)
+    csv_local_path = "cocoon_rates.csv"
+    sheet_url = "https://docs.google.com/spreadsheets/d/1ysO7bTj3SGMa64vwVcwnojAdxU0J2JkdxvjeKZvuRSU/gviz/tq?tqx=out:csv&sheet=India%20Market%20Rate"
+    
+    if os.path.exists(csv_local_path):
+        df = pd.read_csv(csv_local_path)
+    else:
+        df = pd.read_csv(sheet_url)
+        
     df.columns = [str(c).strip() for c in df.columns]
     
     numeric_cols = ['Min', 'Max', 'Avg', 'Lots', 'Qty (kg)']
@@ -646,7 +651,7 @@ try:
         st.plotly_chart(fig_line, use_container_width=True)
 
     st.markdown("---")
-    st.caption("✅ **Live Sync Active:** Connected to Google Sheets 'India Market Rate' tab.")
+    st.caption("✅ **Live Sync Active:** Local CSV & Google Sheets Connected.")
 
 except Exception as e:
-    st.error(f"⚠️ Error loading sheet data: {e}")
+    st.error(f"⚠️ Error loading data: {e}")
