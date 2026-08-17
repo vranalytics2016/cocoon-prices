@@ -1,0 +1,34 @@
+name: Auto Fetch Live Cocoon Rates
+
+on:
+  schedule:
+    # Runs every 30 minutes between 9:30 AM IST and 6:30 PM IST, Monday-Saturday
+    - cron: '*/30 4-13 * * 1-6'
+  workflow_dispatch: # Allows manual run anytime from GitHub UI
+
+jobs:
+  update-data:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install pandas
+
+      - name: Run Scraper
+        run: python scraper.py
+
+      - name: Commit and Push if updated
+        run: |
+          git config --global user.name "GitHub Action Bot"
+          git config --global user.email "action@github.com"
+          git add cocoon_rates.csv
+          git diff --quiet && git diff --staged --quiet || (git commit -m "🤖 Auto-updated cocoon rates [$(date +'%Y-%m-%d %H:%M')]" && git push)
