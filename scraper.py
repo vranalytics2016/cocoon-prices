@@ -1,24 +1,43 @@
 import os
 import re
+import json
+import time
 import urllib.request
+import xml.etree.ElementTree as ET
 from datetime import datetime
 import pandas as pd
 
 CSV_FILE = "cocoon_rates.csv"
+SUMMARY_FILE = "summary.json"
+
+CATEGORY_URLS = [
+    "https://kannadatopnews.com/category/announcement/sericulture/",
+    "https://kannadatopnews.com/category/announcement/sericulture/silk-cocoon/"
+]
+
+FEED_URLS = [
+    "https://kannadatopnews.com/category/announcement/sericulture/feed/",
+    "https://kannadatopnews.com/category/announcement/sericulture/silk-cocoon/feed/"
+]
+
 HEADERS = {
     'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
 }
 
-def fetch_url_content(url):
-    try:
-        req = urllib.request.Request(url, headers=HEADERS)
-        return urllib.request.urlopen(req, timeout=12).read().decode('utf-8', errors='ignore')
-    except Exception as e:
-        print(f"Error fetching {url}: {e}")
-        return ""
+# 🔄 AUTO-RETRY NETWORK RESILIENCE
+def fetch_url_with_retry(url, retries=3, delay=3):
+    for attempt in range(retries):
+        try:
+            req = urllib.request.Request(url, headers=HEADERS)
+            return urllib.request.urlopen(req, timeout=10).read().decode('utf-8', errors='ignore')
+        except Exception as e:
+            if attempt < retries - 1:
+                time.sleep(delay)
+            else:
+                print(f"Failed to fetch {url} after {retries} attempts: {e}")
+                return ""
 
 def extract_date(text):
-    # Match "17 August 2026" or "18 August 2026"
     m1 = re.search(r'(\d{1,2})\s+([A-Za-z]+)\s+(20\d{2})', text)
     if m1:
         day, month_str, year = m1.groups()
@@ -28,7 +47,6 @@ def extract_date(text):
         except Exception:
             pass
     
-    # Match "17/08/2026" or "17-08-2026"
     m2 = re.search(r'(\d{1,2}[\/\.-]\d{1,2}[\/\.-]20\d{2})', text)
     if m2:
         return m2.group(1).replace('-', '/').replace('.', '/')
@@ -44,25 +62,29 @@ def extract_market_name(text):
                  .replace("–", "").replace("-", "").replace("|", "").strip()
     return clean if clean else "General Market"
 
+# 🛡️ DATA QUALITY GUARDRAIL (Sanitizes typos/outliers)
+def is_valid_rate(val):
+    try:
+        f = float(val)
+        return 150 <= f <= 2000  # Valid cocoon rates in India range between ₹150/kg and ₹2,000/kg
+    except Exception:
+        return False
+
 def parse_page_content(html_content, items):
-    # Clean HTML comments
     html_content = re.sub(r'<!--.*?-->', '', html_content, flags=re.DOTALL)
     
-    # Extract page title
     title_match = re.search(r'<title>(.*?)</title>', html_content, re.IGNORECASE)
     page_title = title_match.group(1) if title_match else ""
 
     display_date = extract_date(page_title + " " + html_content)
     market_name = extract_market_name(page_title)
 
-    # Convert HTML to clean whitespace-separated text
     clean_text = re.sub(r'<br\s*/?>', '\n', html_content, flags=re.IGNORECASE)
     clean_text = re.sub(r'</?(p|tr|td|div|h1|h2|h3)[^>]*>', ' \n ', clean_text, flags=re.IGNORECASE)
     clean_text = re.sub(r'<[^>]+>', ' ', clean_text)
     clean_text = re.sub(r'&nbsp;', ' ', clean_text)
     clean_text = re.sub(r'&#8377;', '₹', clean_text)
 
-    # Keywords for BV and CB
     bv_pattern = re.compile(r'(Bi[\s\-]?Voltine|BV|ದ್ವಿತಳಿ)', re.IGNORECASE)
     cb_pattern = re.compile(r'(Cross[\s\-]?Breed|CB|ಮಿಶ್ರತಳಿ)', re.IGNORECASE)
 
@@ -71,32 +93,18 @@ def parse_page_content(html_content, items):
         idx = bv_match.start()
         snippet = clean_text[idx:idx+300]
         nums = re.findall(r'\b\d+(?:\.\d+)?\b', snippet)
-        
-        # Filter out 4-digit years like 2026 if present
-        nums = [n for n in nums if n != '2026' and n != '2025']
+        nums = [n for n in nums if n not in ['2025', '2026', '2027']]
 
-        if len(nums) >= 5:
+        if len(nums) >= 5 and is_valid_rate(nums[2]) and is_valid_rate(nums[3]):
             items.append({
                 "Date": display_date,
                 "Market Name": market_name,
                 "Variety": "Bi-Voltine (BV) – ದ್ವಿತಳಿ",
                 "Lots": nums[0],
                 "Qty (kg)": nums[1],
-                "Min": nums[2],
-                "Max": nums[3],
-                "Avg": nums[4]
-            })
-            break
-        elif len(nums) >= 3:
-            items.append({
-                "Date": display_date,
-                "Market Name": market_name,
-                "Variety": "Bi-Voltine (BV) – ದ್ವಿತಳಿ",
-                "Lots": "-",
-                "Qty (kg)": "-",
-                "Min": nums[0],
-                "Max": nums[1],
-                "Avg": nums[2]
+                "Min": float(nums[2]),
+                "Max": float(nums[3]),
+                "Avg": float(nums[4])
             })
             break
 
@@ -105,30 +113,18 @@ def parse_page_content(html_content, items):
         idx = cb_match.start()
         snippet = clean_text[idx:idx+300]
         nums = re.findall(r'\b\d+(?:\.\d+)?\b', snippet)
-        nums = [n for n in nums if n != '2026' and n != '2025']
+        nums = [n for n in nums if n not in ['2025', '2026', '2027']]
 
-        if len(nums) >= 5:
+        if len(nums) >= 5 and is_valid_rate(nums[2]) and is_valid_rate(nums[3]):
             items.append({
                 "Date": display_date,
                 "Market Name": market_name,
                 "Variety": "Cross-Breed (CB) – ಮಿಶ್ರತಳಿ",
                 "Lots": nums[0],
                 "Qty (kg)": nums[1],
-                "Min": nums[2],
-                "Max": nums[3],
-                "Avg": nums[4]
-            })
-            break
-        elif len(nums) >= 3:
-            items.append({
-                "Date": display_date,
-                "Market Name": market_name,
-                "Variety": "Cross-Breed (CB) – ಮಿಶ್ರತಳಿ",
-                "Lots": "-",
-                "Qty (kg)": "-",
-                "Min": nums[0],
-                "Max": nums[1],
-                "Avg": nums[2]
+                "Min": float(nums[2]),
+                "Max": float(nums[3]),
+                "Avg": float(nums[4])
             })
             break
 
@@ -136,15 +132,10 @@ def parse_all_sources():
     items = []
     visited_urls = set()
 
-    # Step 1: Discover individual market article links from category pages
-    category_urls = [
-        "https://kannadatopnews.com/category/announcement/sericulture/",
-        "https://kannadatopnews.com/category/announcement/sericulture/silk-cocoon/"
-    ]
-
+    # Discover direct article URLs
     article_urls = []
-    for cat_url in category_urls:
-        html = fetch_url_content(cat_url)
+    for cat_url in CATEGORY_URLS:
+        html = fetch_url_with_retry(cat_url)
         if html:
             link_regex = re.compile(r'href="(https:\/\/kannadatopnews\.com\/[a-z0-9\-]*silk-cocoon-market[a-z0-9\-]*\/)"', re.IGNORECASE)
             found_links = link_regex.findall(html)
@@ -153,27 +144,35 @@ def parse_all_sources():
                     visited_urls.add(l)
                     article_urls.append(l)
 
-    print(f"Found {len(article_urls)} market article links.")
-
-    # Step 2: Fetch each individual article page directly
+    # Crawl each market article page
     for a_url in article_urls[:15]:
-        art_html = fetch_url_content(a_url)
+        art_html = fetch_url_with_retry(a_url)
         if art_html:
             parse_page_content(art_html, items)
 
-    # Step 3: Also parse RSS feeds
-    feed_urls = [
-        "https://kannadatopnews.com/category/announcement/sericulture/feed/",
-        "https://kannadatopnews.com/category/announcement/sericulture/silk-cocoon/feed/"
-    ]
-    for f_url in feed_urls:
-        feed_html = fetch_url_content(f_url)
+    # RSS Feeds fallback
+    for f_url in FEED_URLS:
+        feed_html = fetch_url_with_retry(f_url)
         if feed_html:
             parse_page_content(feed_html, items)
 
     return pd.DataFrame(items)
 
-def update_csv():
+def update_csv_and_summary():
+    today_str = datetime.now().strftime("%d/%m/%Y")
+
+    # ⏱️ SMART EARLY EXIT CHECK
+    if os.path.exists(CSV_FILE):
+        try:
+            df_check = pd.read_csv(CSV_FILE)
+            today_records = df_check[df_check['Date'] == today_str]
+            # If 10+ major markets for today are already captured, exit in 1s
+            if len(today_records) >= 12:
+                print(f"⚡ Smart Early Exit: All {len(today_records)} major markets for today ({today_str}) are already fully recorded.")
+                return
+        except Exception:
+            pass
+
     new_df = parse_all_sources()
 
     if os.path.exists(CSV_FILE):
@@ -189,8 +188,28 @@ def update_csv():
         else:
             combined_df = pd.DataFrame(columns=["Date", "Market Name", "Variety", "Lots", "Qty (kg)", "Min", "Max", "Avg"])
 
+    # Save main CSV
     combined_df.to_csv(CSV_FILE, index=False)
-    print(f"CSV successfully updated. Total historical records: {len(combined_df)}")
+    print(f"CSV updated. Total historical records: {len(combined_df)}")
+
+    # ⚡ GENERATE FAST TODAY SUMMARY JSON FOR MOBILE APP
+    try:
+        latest_date = combined_df['Date'].iloc[-1] if not combined_df.empty else today_str
+        latest_df = combined_df[combined_df['Date'] == latest_date]
+        
+        summary_data = {
+            "last_updated": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+            "latest_date": str(latest_date),
+            "total_markets": len(latest_df['Market Name'].unique()),
+            "bv_avg": float(latest_df[latest_df['Variety'].str.contains('BV|Bi-Voltine', na=False)]['Avg'].mean() or 0),
+            "cb_avg": float(latest_df[latest_df['Variety'].str.contains('CB|Cross', na=False)]['Avg'].mean() or 0)
+        }
+        
+        with open(SUMMARY_FILE, "w") as f:
+            json.dump(summary_data, f, indent=2)
+        print("Summary JSON generated successfully.")
+    except Exception as e:
+        print("Error generating summary JSON:", e)
 
 if __name__ == "__main__":
-    update_csv()
+    update_csv_and_summary()
