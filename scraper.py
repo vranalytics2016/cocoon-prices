@@ -1,141 +1,180 @@
 import os
 import re
 import urllib.request
-import xml.etree.ElementTree as ET
 from datetime import datetime
 import pandas as pd
 
 CSV_FILE = "cocoon_rates.csv"
-
-# Parent category feeds and web URLs
-FEED_URLS = [
-    "https://kannadatopnews.com/category/announcement/sericulture/feed/",
-    "https://kannadatopnews.com/category/announcement/sericulture/silk-cocoon/feed/",
-    "https://kannadatopnews.com/feed/"
-]
-
-WEB_URL = "https://kannadatopnews.com/category/announcement/sericulture/"
-
 HEADERS = {
     'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
 }
 
-def extract_items_from_text(title, content_text, pubDate, items):
-    # 1. Extract Date directly from Title (e.g. "17 August 2026" -> "17/08/2026")
-    display_date = None
-    
-    # Check title for "17 August 2026" or "17/08/2026"
-    title_date_match = re.search(r'(\d{1,2})\s+([A-Za-z]+)\s+(\d{4})', title)
-    if title_date_match:
-        day, month_str, year = title_date_match.groups()
+def fetch_url_content(url):
+    try:
+        req = urllib.request.Request(url, headers=HEADERS)
+        return urllib.request.urlopen(req, timeout=12).read().decode('utf-8', errors='ignore')
+    except Exception as e:
+        print(f"Error fetching {url}: {e}")
+        return ""
+
+def extract_date(text):
+    # Match "17 August 2026" or "18 August 2026"
+    m1 = re.search(r'(\d{1,2})\s+([A-Za-z]+)\s+(20\d{2})', text)
+    if m1:
+        day, month_str, year = m1.groups()
         try:
             dt = datetime.strptime(f"{day} {month_str} {year}", "%d %B %Y")
-            display_date = dt.strftime("%d/%m/%Y")
+            return dt.strftime("%d/%m/%Y")
         except Exception:
             pass
+    
+    # Match "17/08/2026" or "17-08-2026"
+    m2 = re.search(r'(\d{1,2}[\/\.-]\d{1,2}[\/\.-]20\d{2})', text)
+    if m2:
+        return m2.group(1).replace('-', '/').replace('.', '/')
+        
+    return datetime.now().strftime("%d/%m/%Y")
 
-    if not display_date:
-        numeric_date_match = re.search(r'([0-9]{1,2}[\/\.-][0-9]{1,2}[\/\.-][0-9]{2,4})', title)
-        if numeric_date_match:
-            display_date = numeric_date_match.group(1).strip()
+def extract_market_name(text):
+    clean = re.sub(r'\d{1,2}\s+[A-Za-z]+\s+20\d{2}', '', text)
+    clean = re.sub(r'\d{1,2}[\/\.-]\d{1,2}[\/\.-]20\d{2}', '', clean)
+    clean = clean.replace("Silk Cocoon Market", "").replace("Government Silk Cocoon", "") \
+                 .replace("Daily Rate Report", "").replace("Market Rates", "") \
+                 .replace("Kannada Top News", "").replace("Market", "") \
+                 .replace("–", "").replace("-", "").replace("|", "").strip()
+    return clean if clean else "General Market"
 
-    if not display_date:
-        body_date_match = re.search(r'Date:\s*([0-9]{1,2}[\/\.-][0-9]{1,2}[\/\.-][0-9]{2,4})', content_text, re.IGNORECASE)
-        if body_date_match:
-            display_date = body_date_match.group(1).strip()
+def parse_page_content(html_content, items):
+    # Clean HTML comments
+    html_content = re.sub(r'<!--.*?-->', '', html_content, flags=re.DOTALL)
+    
+    # Extract page title
+    title_match = re.search(r'<title>(.*?)</title>', html_content, re.IGNORECASE)
+    page_title = title_match.group(1) if title_match else ""
 
-    if not display_date and pubDate:
-        try:
-            dt = datetime.strptime(pubDate[:25].strip(), "%a, %d %b %Y %H:%M:%S")
-            display_date = dt.strftime("%d/%m/%Y")
-        except Exception:
-            display_date = datetime.now().strftime("%d/%m/%Y")
+    display_date = extract_date(page_title + " " + html_content)
+    market_name = extract_market_name(page_title)
 
-    if not display_date:
-        display_date = datetime.now().strftime("%d/%m/%Y")
-
-    # 2. Extract Market Name from Title
-    clean_title = re.sub(r'\d{1,2}\s+[A-Za-z]+\s+\d{4}', '', title) # Remove date from title
-    market_name = clean_title.replace("Silk Cocoon Market", "").replace("Government Silk Cocoon", "") \
-                       .replace("Daily Rate Report", "").replace("Market Rates", "") \
-                       .replace("Market", "").replace("–", "").replace("-", "").replace("|", "").strip()
-
-    if not market_name:
-        market_name = "General Market"
-
-    # 3. Clean Text
-    clean_text = re.sub(r'<br\s*/?>', '\n', content_text, flags=re.IGNORECASE)
-    clean_text = re.sub(r'</?(p|tr|td)[^>]*>', ',', clean_text, flags=re.IGNORECASE)
+    # Convert HTML to clean whitespace-separated text
+    clean_text = re.sub(r'<br\s*/?>', '\n', html_content, flags=re.IGNORECASE)
+    clean_text = re.sub(r'</?(p|tr|td|div|h1|h2|h3)[^>]*>', ' \n ', clean_text, flags=re.IGNORECASE)
     clean_text = re.sub(r'<[^>]+>', ' ', clean_text)
-    clean_text = re.sub(r'\s+', ' ', clean_text)
+    clean_text = re.sub(r'&nbsp;', ' ', clean_text)
+    clean_text = re.sub(r'&#8377;', '₹', clean_text)
 
-    # 4. Regex for Variety lines (Supports comma separated and text lines)
-    csv_regex = re.compile(
-        r'(Cross[\s\-]?Breed|Bi[\s\-]?Voltine|CB|BV|ಮಿಶ್ರತಳಿ|ದ್ವಿತಳಿ)[^\n,]*,\s*([0-9\.]+)\s*,\s*([0-9\.]+)\s*,\s*₹?\s*([0-9\.]+)\s*,\s*₹?\s*([0-9\.]+)\s*,\s*₹?\s*([0-9\.]+)',
-        re.IGNORECASE
-    )
+    # Keywords for BV and CB
+    bv_pattern = re.compile(r'(Bi[\s\-]?Voltine|BV|ದ್ವಿತಳಿ)', re.IGNORECASE)
+    cb_pattern = re.compile(r'(Cross[\s\-]?Breed|CB|ಮಿಶ್ರತಳಿ)', re.IGNORECASE)
 
-    for m in csv_regex.finditer(clean_text):
-        raw_v = m.group(1).lower()
-        v_label = "Bi-Voltine (BV) – ದ್ವಿತಳಿ" if any(x in raw_v for x in ['bi', 'bv', 'ದ್ವಿತಳಿ']) else "Cross-Breed (CB) – ಮಿಶ್ರತಳಿ"
+    # Parse BV
+    for bv_match in bv_pattern.finditer(clean_text):
+        idx = bv_match.start()
+        snippet = clean_text[idx:idx+300]
+        nums = re.findall(r'\b\d+(?:\.\d+)?\b', snippet)
+        
+        # Filter out 4-digit years like 2026 if present
+        nums = [n for n in nums if n != '2026' and n != '2025']
 
-        items.append({
-            "Date": display_date,
-            "Market Name": market_name,
-            "Variety": v_label,
-            "Lots": m.group(2).strip(),
-            "Qty (kg)": m.group(3).strip(),
-            "Min": m.group(4).strip(),
-            "Max": m.group(5).strip(),
-            "Avg": m.group(6).strip()
-        })
+        if len(nums) >= 5:
+            items.append({
+                "Date": display_date,
+                "Market Name": market_name,
+                "Variety": "Bi-Voltine (BV) – ದ್ವಿತಳಿ",
+                "Lots": nums[0],
+                "Qty (kg)": nums[1],
+                "Min": nums[2],
+                "Max": nums[3],
+                "Avg": nums[4]
+            })
+            break
+        elif len(nums) >= 3:
+            items.append({
+                "Date": display_date,
+                "Market Name": market_name,
+                "Variety": "Bi-Voltine (BV) – ದ್ವಿತಳಿ",
+                "Lots": "-",
+                "Qty (kg)": "-",
+                "Min": nums[0],
+                "Max": nums[1],
+                "Avg": nums[2]
+            })
+            break
 
-def parse_feed():
+    # Parse CB
+    for cb_match in cb_pattern.finditer(clean_text):
+        idx = cb_match.start()
+        snippet = clean_text[idx:idx+300]
+        nums = re.findall(r'\b\d+(?:\.\d+)?\b', snippet)
+        nums = [n for n in nums if n != '2026' and n != '2025']
+
+        if len(nums) >= 5:
+            items.append({
+                "Date": display_date,
+                "Market Name": market_name,
+                "Variety": "Cross-Breed (CB) – ಮಿಶ್ರತಳಿ",
+                "Lots": nums[0],
+                "Qty (kg)": nums[1],
+                "Min": nums[2],
+                "Max": nums[3],
+                "Avg": nums[4]
+            })
+            break
+        elif len(nums) >= 3:
+            items.append({
+                "Date": display_date,
+                "Market Name": market_name,
+                "Variety": "Cross-Breed (CB) – ಮಿಶ್ರತಳಿ",
+                "Lots": "-",
+                "Qty (kg)": "-",
+                "Min": nums[0],
+                "Max": nums[1],
+                "Avg": nums[2]
+            })
+            break
+
+def parse_all_sources():
     items = []
+    visited_urls = set()
 
-    # Method 1: Scan multiple RSS feeds
-    for feed_url in FEED_URLS:
-        try:
-            req = urllib.request.Request(feed_url, headers=HEADERS)
-            html_raw = urllib.request.urlopen(req, timeout=10).read().decode('utf-8', errors='ignore')
-            html_raw = html_raw.replace("&nbsp;", " ").replace("&amp;", "&").replace("&#8377;", "₹")
+    # Step 1: Discover individual market article links from category pages
+    category_urls = [
+        "https://kannadatopnews.com/category/announcement/sericulture/",
+        "https://kannadatopnews.com/category/announcement/sericulture/silk-cocoon/"
+    ]
 
-            if "<item>" in html_raw:
-                root = ET.fromstring(html_raw)
-                channel = root.find('channel')
-                for item in channel.findall('item'):
-                    title = item.find('title').text if item.find('title') is not None else ""
-                    desc = item.find('description').text if item.find('description') is not None else ""
-                    pubDate = item.find('pubDate').text if item.find('pubDate') is not None else ""
-                    extract_items_from_text(title, desc, pubDate, items)
-        except Exception as e:
-            print(f"Feed error ({feed_url}):", e)
-
-    # Method 2: Direct Category Scraping Fallback
-    if len(items) == 0:
-        try:
-            req = urllib.request.Request(WEB_URL, headers=HEADERS)
-            cat_html = urllib.request.urlopen(req, timeout=10).read().decode('utf-8', errors='ignore')
-
+    article_urls = []
+    for cat_url in category_urls:
+        html = fetch_url_content(cat_url)
+        if html:
             link_regex = re.compile(r'href="(https:\/\/kannadatopnews\.com\/[a-z0-9\-]*silk-cocoon-market[a-z0-9\-]*\/)"', re.IGNORECASE)
-            article_urls = list(set(link_regex.findall(cat_html)))[:12]
+            found_links = link_regex.findall(html)
+            for l in found_links:
+                if l not in visited_urls:
+                    visited_urls.add(l)
+                    article_urls.append(l)
 
-            for url in article_urls:
-                try:
-                    areq = urllib.request.Request(url, headers=HEADERS)
-                    art_html = urllib.request.urlopen(areq, timeout=10).read().decode('utf-8', errors='ignore')
-                    title_match = re.search(r'<title>(.*?)</title>', art_html, re.IGNORECASE)
-                    title = title_match.group(1) if title_match else "Silk Cocoon Market"
-                    extract_items_from_text(title, art_html, None, items)
-                except Exception as err:
-                    print("Article fetch error:", err)
-        except Exception as e:
-            print("Web scraping error:", e)
+    print(f"Found {len(article_urls)} market article links.")
+
+    # Step 2: Fetch each individual article page directly
+    for a_url in article_urls[:15]:
+        art_html = fetch_url_content(a_url)
+        if art_html:
+            parse_page_content(art_html, items)
+
+    # Step 3: Also parse RSS feeds
+    feed_urls = [
+        "https://kannadatopnews.com/category/announcement/sericulture/feed/",
+        "https://kannadatopnews.com/category/announcement/sericulture/silk-cocoon/feed/"
+    ]
+    for f_url in feed_urls:
+        feed_html = fetch_url_content(f_url)
+        if feed_html:
+            parse_page_content(feed_html, items)
 
     return pd.DataFrame(items)
 
 def update_csv():
-    new_df = parse_feed()
+    new_df = parse_all_sources()
 
     if os.path.exists(CSV_FILE):
         existing_df = pd.read_csv(CSV_FILE)
