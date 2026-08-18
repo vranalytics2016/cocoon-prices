@@ -2,8 +2,8 @@ name: Auto Fetch Live Cocoon Rates
 
 on:
   schedule:
-    # Runs every 30 minutes between 9:30 AM IST and 6:30 PM IST, Monday-Saturday
-    - cron: '*/30 4-13 * * 1-6'
+    # Runs every 45 mins between 12:00 PM IST and 6:30 PM IST (06:15 to 13:00 UTC), Mon-Sat
+    - cron: '15,45 6-13 * * 1-6'
   workflow_dispatch: # Allows manual run anytime from GitHub UI
 
 permissions:
@@ -26,16 +26,12 @@ jobs:
           python -m pip install --upgrade pip
           pip install pandas
 
-      - name: Run Scraper
+      - name: Run Smart Scraper
         run: python scraper.py
 
       - name: Commit and Push if updated
         run: |
           git config --global user.name "GitHub Action Bot"
           git config --global user.email "action@github.com"
-          if [ -f cocoon_rates.csv ]; then
-            git add cocoon_rates.csv
-            git diff --quiet && git diff --staged --quiet || (git commit -m "🤖 Auto-updated cocoon rates [$(date +'%Y-%m-%d %H:%M')]" && git push)
-          else
-            echo "cocoon_rates.csv not found yet."
-          fi
+          git add cocoon_rates.csv summary.json 2>/dev/null || true
+          git diff --quiet && git diff --staged --quiet || (git commit -m "🤖 Auto-updated cocoon rates & summary [$(date +'%Y-%m-%d %H:%M')]" && git push)
